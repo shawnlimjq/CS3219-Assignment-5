@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
@@ -13,5 +16,54 @@
          </font>
       </Label>
       <TextField fx:id="githubRepoInput" layoutX="38.0" layoutY="76.0" prefHeight="25.0" prefWidth="1036.0" />
+      <TabPane fx:id="mainTabPane" layoutX="45.0" layoutY="136.0" prefHeight="595.0" prefWidth="1036.0" tabClosingPolicy="UNAVAILABLE" visible="false">
+        <tabs>
+          <Tab fx:id="tabA" text="Tab A">
+               <content>
+                  <ScrollPane fx:id="tabASP" prefHeight="200.0" prefWidth="200.0">
+                    <content>
+                      <AnchorPane fx:id="tabAAP" minHeight="0.0" minWidth="0.0" prefHeight="564.0" prefWidth="1034.0" />
+                    </content>
+                  </ScrollPane>
+               </content>
+          </Tab>
+          <Tab fx:id="tabB" text="Tab B">
+               <content>
+                  <ScrollPane fx:id="tabBSP" prefHeight="200.0" prefWidth="200.0">
+                    <content>
+                      <AnchorPane fx:id="tabBAP" minHeight="0.0" minWidth="0.0" prefHeight="566.0" prefWidth="1034.0" />
+                    </content>
+                  </ScrollPane>
+               </content>
+          </Tab>
+            <Tab text="Tab C">
+               <content>
+                  <ScrollPane fx:id="tabCSP" prefHeight="200.0" prefWidth="200.0">
+                    <content>
+                      <AnchorPane fx:id="tabCAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1035.0" />
+                    </content>
+                  </ScrollPane>
+               </content>
+            </Tab>
+            <Tab text="Tab D">
+               <content>
+                  <ScrollPane fx:id="tabDSP" prefHeight="200.0" prefWidth="200.0">
+                    <content>
+                      <AnchorPane fx:id="tabDAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1034.0" />
+                    </content>
+                  </ScrollPane>
+               </content>
+            </Tab>
+            <Tab text="Tab E">
+               <content>
+                  <ScrollPane fx:id="tabESP" prefHeight="200.0" prefWidth="200.0">
+                    <content>
+                      <AnchorPane fx:id="tabEAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1035.0" />
+                    </content>
+                  </ScrollPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
    </children>
 </fx:root>
