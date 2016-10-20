@@ -1,11 +1,15 @@
 package application;
 	
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -19,6 +23,7 @@ import javafx.scene.layout.AnchorPane;
 public class MainPage extends AnchorPane {
 	
 	private static final String MAIN_PAGE_FXML_URL = "MainPage.fxml";
+	private static ObservableList<PieChart.Data> list = FXCollections.observableList(new ArrayList<PieChart.Data>());
 	
 	@FXML
 	private Label gitGuardLabel;
@@ -56,6 +61,8 @@ public class MainPage extends AnchorPane {
 	private ScrollPane tabDSP;
 	@FXML
 	private ScrollPane tabESP;
+	@FXML
+	private PieChart piechartA;
 	
 	private static MainPage instance = null;
 
@@ -85,6 +92,9 @@ public class MainPage extends AnchorPane {
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
 					//commands to show json stuff here
+					piechartA.setData(list);
+					//Use this to add data to piechart
+					list.add(new PieChart.Data("a", 10));
 					mainTabPane.visibleProperty().set(true);
 				}
 			}
