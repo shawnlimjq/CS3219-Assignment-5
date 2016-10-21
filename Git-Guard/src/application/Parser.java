@@ -29,29 +29,17 @@ public class Parser {
 		 
 	        JSONArray array = (JSONArray) parser.parse(str);
 				
-	        /*
+	        
 			 System.out.println("The 2nd element of array");
 			 System.out.println(array.get(1));
 			 System.out.println();
 			
 			 JSONObject obj2 = (JSONObject)array.get(1);
 			 System.out.println("Field \"1\"");
-			 System.out.println(obj2.get("1"));    
+			 System.out.println(obj2.get("login"));    
 			
-			 s = "{}";
-			 obj = parser.parse(s);
-			 System.out.println(obj);
-			
-			 s = "[5,]";
-			 obj = parser.parse(s);
-			 System.out.println(obj);
-			
-			 s = "[5,,2]";
-			 obj = parser.parse(s);
-			 System.out.println(obj);
-		      */                  
 		} catch (Exception e){
-			System.out.println("Unable to parse URL!");
+			System.out.println("Unable to parse URL!" + e.toString());
 		}
 	}
 	

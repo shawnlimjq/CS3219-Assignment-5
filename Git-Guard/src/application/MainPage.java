@@ -2,6 +2,8 @@ package application;
 	
 import java.io.IOException;
 
+import org.json.simple.JSONArray;
+
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -51,6 +53,11 @@ public class MainPage extends AnchorPane {
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
 					//commands to show json stuff here
+					Parser parser = new Parser(gitGuardLabel.getText());
+					parser.parseURL();
+					
+					// Update UI with parser's JSONArray
+					JSONArray jsonArr = parser.getJSONArr();
 				}
 			}
 		});
