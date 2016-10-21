@@ -97,7 +97,7 @@ public class MainPage extends AnchorPane {
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
 					//commands to show json stuff here
-					Parser parser = new Parser(gitGuardLabel.getText());
+					Parser parser = new Parser(githubRepoInput.getText());
 					parser.parseURL();
 					
 					// Update UI with parser's JSONArray
@@ -108,10 +108,9 @@ public class MainPage extends AnchorPane {
 					//Use this to add data to piechart
 					for(int i =0 ; i< jsonArr.size(); i++){
 
-				         // https://api.github.com/repos/tungnk1993/scrapy/contributors
-						 JSONObject jsonObj = (JSONObject) jsonArr.get(i);
-					
-						 list.add(new PieChart.Data(LOGIN, (double) jsonObj.get(CONTRIBUTIONS)));
+						JSONObject jsonObj = (JSONObject) jsonArr.get(i);
+						list.add(new PieChart.Data((String) jsonObj.get(LOGIN), (Long) jsonObj.get(CONTRIBUTIONS)));
+						
 					}
 					mainTabPane.visibleProperty().set(true);
 				}

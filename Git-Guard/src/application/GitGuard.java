@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class GitGuard extends Application {
+
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -18,5 +19,9 @@ public class GitGuard extends Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

@@ -12,10 +12,24 @@ public class Parser {
 		
 	public Parser(String url){
 		this.url = url;
+		jsonArr = new JSONArray();
+	}
+	
+	private void convertToAPIURL(){
+		// From : https://github.com/{username}/{repo name}
+        // To : https://api.github.com/repos/{username}/{repo name}/contributors
+		
+		// Remove front https
+		String urlWithoutHttps = url.replace("https://", "");
+		// Get /{username}/{repo name}
+		String names = urlWithoutHttps.substring(urlWithoutHttps.indexOf("/"));
+		url = "https://api.github.com/repos" + names  + "/contributors";
 	}
 	
 	public void parseURL() {
 		try{
+			
+			convertToAPIURL();
 		    URL buildUrl = new URL(url);
 
 		    JSONParser parser = new JSONParser();
@@ -25,7 +39,7 @@ public class Parser {
 		    while (scan.hasNext())
 		        str += scan.nextLine();
 		    scan.close();
-		 
+		    
 	        jsonArr = (JSONArray) parser.parse(str);
 				
 		} catch (Exception e){
