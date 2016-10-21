@@ -3,7 +3,6 @@ package application;
 import java.net.URL;
 import java.util.Scanner;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class Parser {
@@ -27,19 +26,10 @@ public class Parser {
 		        str += scan.nextLine();
 		    scan.close();
 		 
-	        JSONArray array = (JSONArray) parser.parse(str);
+	        jsonArr = (JSONArray) parser.parse(str);
 				
-	        
-			 System.out.println("The 2nd element of array");
-			 System.out.println(array.get(1));
-			 System.out.println();
-			
-			 JSONObject obj2 = (JSONObject)array.get(1);
-			 System.out.println("Field \"1\"");
-			 System.out.println(obj2.get("login"));    
-			
 		} catch (Exception e){
-			System.out.println("Unable to parse URL!" + e.toString());
+			System.out.println("Unable to parse URL!");
 		}
 	}
 	
