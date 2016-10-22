@@ -43,7 +43,7 @@ public class Parser {
 	        jsonArr = (JSONArray) parser.parse(str);
 				
 		} catch (Exception e){
-			System.out.println("Unable to parse URL!");
+			System.out.println("Unable to parse URL! Repo might be private or it doesn't exist!");
 		}
 	}
 	
