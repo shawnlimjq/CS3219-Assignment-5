@@ -70,5 +70,6 @@
             </Tab>
         </tabs>
       </TabPane>
+      <Label fx:id="errorLabel" layoutX="45.0" layoutY="113.0" text="Unable to parse URL! Repo might be private or it doesn't exist!" textFill="RED" visible="false" />
    </children>
 </fx:root>

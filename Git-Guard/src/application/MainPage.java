@@ -33,6 +33,8 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private Label gitGuardLabel;
 	@FXML
+	private Label errorLabel;
+	@FXML
 	private TextField githubRepoInput;
 	@FXML
 	private TabPane mainTabPane;
