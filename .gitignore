@@ -1,3 +1,4 @@
 *.classpath
 Git-Guard/bin/application/MainPage$1.class
 Git-Guard/bin/application/MainPage.class
+*.classpath

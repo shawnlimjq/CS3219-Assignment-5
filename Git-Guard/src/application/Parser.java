@@ -3,33 +3,36 @@ package application;
 import java.net.URL;
 import java.util.Scanner;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class Parser {
 	
 	private String url;
 	private JSONArray jsonArr;
-		
+	private JSONObject jsonObj;
+	
 	public Parser(String url){
 		this.url = url;
 		jsonArr = new JSONArray();
+		jsonObj = new JSONObject();
+		convertToAPIURL();
 	}
 	
 	private void convertToAPIURL(){
 		// From : https://github.com/{username}/{repo name}
-        // To : https://api.github.com/repos/{username}/{repo name}/contributors
+        // To : https://api.github.com/repos/{username}/{repo name}
 		
 		// Remove front https
-		String urlWithoutHttps = url.replace("https://", "");
+		String urlWithoutHttps = getUrl().replace("https://", "");
 		// Get /{username}/{repo name}
 		String names = urlWithoutHttps.substring(urlWithoutHttps.indexOf("/"));
-		url = "https://api.github.com/repos" + names  + "/contributors";
+		this.url = "https://api.github.com/repos" + names;
 	}
 	
-	public void parseURL() {
+	public boolean parseURL() {
 		try{
 			
-			convertToAPIURL();
 		    URL buildUrl = new URL(url);
 
 		    JSONParser parser = new JSONParser();
@@ -39,16 +42,25 @@ public class Parser {
 		    while (scan.hasNext())
 		        str += scan.nextLine();
 		    scan.close();
-		    
-	        jsonArr = (JSONArray) parser.parse(str);
+		    if(this instanceof ContriParser || this instanceof CommitParser){
+		    	jsonArr = (JSONArray) parser.parse(str);
+		    } else {
+		    	jsonObj = (JSONObject) parser.parse(str);
+		    }
+	        return true;
 				
 		} catch (Exception e){
-			System.out.println("Unable to parse URL! Repo might be private or it doesn't exist!");
+			System.out.println("Unable to parse URL! Repo might be private or it doesn't exist!" + e.toString());
+			return false;
 		}
 	}
 	
 	public JSONArray getJSONArr(){
 		return jsonArr;
+	}
+	
+	public JSONObject getJSONObj(){
+		return jsonObj;
 	}
 	
 	public void setUrl(String url){

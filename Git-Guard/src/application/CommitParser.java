@@ -2,20 +2,21 @@ package application;
 
 public class CommitParser extends Parser {
 	
-	private String url;
+	private String author;
+	private String since;
 	
-	public CommitParser(String url) {
+	// PARAM : author	string	GitHub login or email address by which to filter by commit author.
+	// PARAM : since	string	Only commits after this date will be returned. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+	public CommitParser(String url, String author, String since) {
 		super(url);
+		this.author = author;
+		this.since = since;
+		convertToAPIURL();
 	}
 
 	private void convertToAPIURL(){
 		// From : https://github.com/{username}/{repo name}
-        // To : https://api.github.com/repos/{username}/{repo name}/contributors
-		
-		// Remove front https
-		String urlWithoutHttps = url.replace("https://", "");
-		// Get /{username}/{repo name}
-		String names = urlWithoutHttps.substring(urlWithoutHttps.indexOf("/"));
-		url = "https://api.github.com/repos" + names  + "/commits";
+        // To : https://api.github.com/repos/{username}/{repo name}/commits
+		setUrl(getUrl()  + "/commits?author=" + author + "&since=" + since);
 	}
 }
