@@ -100,7 +100,13 @@ public class MainPage extends AnchorPane {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
 					//commands to show json stuff here
 					Parser parser = new Parser(githubRepoInput.getText());
-					parser.parseURL();
+					boolean checkError = parser.parseURL();
+					
+					if (checkError==false){
+						errorLabel.setVisible(true);
+					} else{
+						errorLabel.setVisible(false);
+					}
 					
 					// Update UI with parser's JSONArray
 					JSONArray jsonArr = parser.getJSONArr();

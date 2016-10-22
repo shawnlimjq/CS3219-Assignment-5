@@ -26,7 +26,7 @@ public class Parser {
 		url = "https://api.github.com/repos" + names  + "/contributors";
 	}
 	
-	public void parseURL() {
+	public boolean parseURL() {
 		try{
 			
 			convertToAPIURL();
@@ -41,9 +41,11 @@ public class Parser {
 		    scan.close();
 		    
 	        jsonArr = (JSONArray) parser.parse(str);
+	        return true;
 				
 		} catch (Exception e){
-			System.out.println("Unable to parse URL!");
+			return false;
+			//System.out.println("Unable to parse URL!");
 		}
 	}
 	
