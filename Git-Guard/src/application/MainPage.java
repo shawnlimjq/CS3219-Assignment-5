@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,14 +21,17 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
+import javafx.util.Duration;
 
 
 public class MainPage extends AnchorPane {
@@ -38,6 +42,10 @@ public class MainPage extends AnchorPane {
 	private static final String CONTRIBUTIONS = "contributions";
 	private static final String LOGIN = "login";
 	private static final String CREATED_AT = "created_at";
+	TranslateTransition openPanel;
+	TranslateTransition closePanel;
+	private static final int TRANSITION_TIME = 350;
+	private static final int STARTPOSITION = 0;
 	
 	@FXML
 	private Label gitGuardLabel;
@@ -67,6 +75,8 @@ public class MainPage extends AnchorPane {
 	private AnchorPane tabDAP;
 	@FXML
 	private AnchorPane tabEAP;
+	@FXML
+	private AnchorPane hiddenMenu;
 	@FXML
 	private ScrollPane tabASP;
 	@FXML
@@ -108,11 +118,13 @@ public class MainPage extends AnchorPane {
 	}
 	
 	public void initialise() {
+		initializeHiddenPanel();
 		Platform.runLater( () -> this.requestFocus() );
 		githubRepoInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
+					toggleHiddenPanel();
 					
 					// Testing link - https://github.com/ymymym/MaterialDateTimePicker
 					Parser mainParser = new Parser(githubRepoInput.getText());
@@ -202,5 +214,27 @@ public class MainPage extends AnchorPane {
 	            }
 	        };
 	        startDate.setDayCellFactory(dayCellFactory);
+	}
+	
+	/*
+	 * Setup hidden panel
+	 */
+	private void initializeHiddenPanel() {
+		openPanel = new TranslateTransition(new Duration(TRANSITION_TIME), hiddenMenu);
+		openPanel.setToX(STARTPOSITION);
+		closePanel = new TranslateTransition(new Duration(TRANSITION_TIME), hiddenMenu);
+	}
+	
+	/*
+	 * Toggle hidden panel
+	 */
+	public void toggleHiddenPanel() {
+		if (hiddenMenu.getTranslateX() != STARTPOSITION) {
+			openPanel.play();
+		} else {
+			assert (hiddenMenu.getTranslateX() == STARTPOSITION);
+			closePanel.setToX(+(hiddenMenu.getWidth()));
+			closePanel.play();
+		}
 	}
 }
