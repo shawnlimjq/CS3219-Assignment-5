@@ -13,6 +13,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.chart.PieChart;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -70,6 +73,12 @@ public class MainPage extends AnchorPane {
 	private ScrollPane tabESP;
 	@FXML
 	private PieChart piechartA;
+	@FXML
+	private ChoiceBox contributorChoice;
+	@FXML
+	private DatePicker startDate;
+	@FXML
+	private Button addBtn;
 	
 	private static MainPage instance = null;
 
