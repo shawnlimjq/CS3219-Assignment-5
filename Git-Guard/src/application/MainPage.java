@@ -17,7 +17,9 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DateCell;
@@ -100,6 +102,8 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private PieChart piechartA;
 	@FXML
+	private BarChart contributorChart;
+	@FXML
 	private ChoiceBox<String> contributorChoice;
 	@FXML
 	private DatePicker startDate;
@@ -143,8 +147,6 @@ public class MainPage extends AnchorPane {
 
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
-					toggleHiddenPanel();
-					
 					// Testing link - https://github.com/ymymym/MaterialDateTimePicker
 					Parser mainParser = new Parser(githubRepoInput.getText());
 					checkError = mainParser.parseURL();
@@ -154,6 +156,8 @@ public class MainPage extends AnchorPane {
 				
 					
 					mainTabPane.visibleProperty().set(true);
+					mainTabPane.disableProperty().set(false);
+					initTabA();
 				}
 			}
 		});
@@ -187,6 +191,9 @@ public class MainPage extends AnchorPane {
                 // Update UI here
             	updateTabB();
             	// Use hashmap to populate histo
+            	ObservableList<XYChart.Series<String, Number>> list1 = FXCollections.observableArrayList();
+            	//list1.add(authorCommits.get(contributorChoice.getValue()).);
+            	contributorChart.setData(list1);
             }
         });
 	}
@@ -199,7 +206,7 @@ public class MainPage extends AnchorPane {
 		
 		// Update UI with parser's JSONArray
 		JSONArray jsonArr = contriParser.getJSONArr();
-		
+		list.clear();
 		piechartA.setData(list);
 		
 		//Use this to add data to piechart
