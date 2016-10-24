@@ -20,11 +20,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Data;
-import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DateCell;
@@ -208,26 +205,22 @@ public class MainPage extends AnchorPane {
                 // Update UI here
             	updateTabB();
             	// Use hashmap to populate histo
-            	ObservableList<XYChart.Series<String, Integer>> list1 = FXCollections.observableArrayList();
-            	Series<String, Integer> aSeries = new Series<String, Integer>();
-
+            	XYChart.Series<String, Integer> series = new XYChart.Series<>();
+            	contributorChart.getData().clear();
             	for (Map.Entry<String, HashMap<String, Integer>> authorEntry : authorCommits.entrySet()) {
             	    String author = authorEntry.getKey();
             	    HashMap<String, Integer> dateCount = authorEntry.getValue();
             	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
             	    	String date = dateEntry.getKey();
             	    	int count = dateEntry.getValue();
+            	    	System.out.println(date+" " + count);
+            	    	series.getData().add(new XYChart.Data<>(date, count));
             	    }
             	}
-            	
-            	/*
-            	if(startDate.getValue() != null && authorCommits.get(contributorChoice.getValue()).get(startDate.getValue()) != null ){
-            		
-            		aSeries.getData().add(new Data<String, Integer>(startDate.getValue().toString(), authorCommits.get(contributorChoice.getValue()).get(startDate.getValue())));
-            	}
-            	*/
-            	list1.add(aSeries);
-            	contributorChart.setData(list1);
+            	//xAxis.setCategories(dateAxis);
+            	//list1.add(series);
+            	//contributorChart.setData(list1);
+            	contributorChart.getData().add(series);
             }
         });
 	}
