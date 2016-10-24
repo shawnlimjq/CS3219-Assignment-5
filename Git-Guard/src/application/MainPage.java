@@ -47,6 +47,7 @@ public class MainPage extends AnchorPane {
 	private static final String COMMIT = "commit";
 	private static final String AUTHOR = "author";
 	private static final String DATE = "date";
+	private static final String SOURCE = "source";
 	
 	TranslateTransition openPanel;
 	TranslateTransition closePanel;
@@ -54,7 +55,7 @@ public class MainPage extends AnchorPane {
 	private static final int STARTPOSITION = 0;
 	private boolean checkError;
 	private JSONObject jsonObj;
-	private HashMap<String, HashMap<String, Integer>> authorCommits;
+	private HashMap<String, HashMap<String, Integer>> authorCommits = new HashMap<String, HashMap<String, Integer>>();
 	private String url = "";
 	
 	@FXML
@@ -151,7 +152,6 @@ public class MainPage extends AnchorPane {
 					checkError();
 					
 					jsonObj= mainParser.getJSONObj();
-				
 					
 					mainTabPane.visibleProperty().set(true);
 				}
@@ -210,13 +210,12 @@ public class MainPage extends AnchorPane {
 			contributors.add((String) innerJsonObj.get(LOGIN));
 			
 		}
-		
-		url = githubRepoInput.getText();
 	}
 	
 	private void initTabB(){
 		// Tab B
-		disableDate((String) jsonObj.get(CREATED_AT));
+		JSONObject sourceObj = (JSONObject) jsonObj.get(SOURCE);
+		disableDate((String) sourceObj.get(CREATED_AT));
 		contributorChoice.setItems(contributors);
 	}
 	
