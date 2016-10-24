@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
-import javax.swing.event.ChangeListener;
+import java.util.HashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -25,14 +23,13 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -43,15 +40,22 @@ public class MainPage extends AnchorPane {
 	private static final String MAIN_PAGE_FXML_URL = "MainPage.fxml";
 	private static ObservableList<PieChart.Data> list = FXCollections.observableList(new ArrayList<PieChart.Data>());
 	private static ObservableList<String> contributors  = FXCollections.observableList(new ArrayList<String>());
+	
 	private static final String CONTRIBUTIONS = "contributions";
 	private static final String LOGIN = "login";
 	private static final String CREATED_AT = "created_at";
+	private static final String COMMIT = "commit";
+	private static final String AUTHOR = "author";
+	private static final String DATE = "date";
+	
 	TranslateTransition openPanel;
 	TranslateTransition closePanel;
 	private static final int TRANSITION_TIME = 350;
 	private static final int STARTPOSITION = 0;
 	private boolean checkError;
 	private JSONObject jsonObj;
+	private HashMap<String, HashMap<String, Integer>> authorCommits;
+	private String url = "";
 	
 	@FXML
 	private Label gitGuardLabel;
@@ -147,7 +151,8 @@ public class MainPage extends AnchorPane {
 					checkError();
 					
 					jsonObj= mainParser.getJSONObj();
-	
+				
+					
 					mainTabPane.visibleProperty().set(true);
 				}
 			}
@@ -156,8 +161,10 @@ public class MainPage extends AnchorPane {
 		tabA.setOnSelectionChanged(new EventHandler<Event>() {
             @Override
             public void handle(Event t) {
-                if (tabA.isSelected()) {
+            	// Condition ensures init ran only once
+                if (tabA.isSelected() && url != githubRepoInput.getText()) {
                 	initTabA();
+                	url = githubRepoInput.getText();
                 }
             }
         });
@@ -165,9 +172,21 @@ public class MainPage extends AnchorPane {
 		tabB.setOnSelectionChanged(new EventHandler<Event>() {
             @Override
             public void handle(Event t) {
-                if (tabB.isSelected()) {
+        		// Condition ensures init ran only once
+                if (tabB.isSelected() && url != githubRepoInput.getText()) {
                 	initTabB();
+                	url = githubRepoInput.getText();
                 }
+            }
+        });
+		
+		addBtn.setOnMouseClicked(new EventHandler<MouseEvent>()
+        {
+            @Override
+            public void handle(MouseEvent t) {
+                // Update UI here
+            	updateTabB();
+            	// Use hashmap to populate histo
             }
         });
 	}
@@ -192,26 +211,68 @@ public class MainPage extends AnchorPane {
 			
 		}
 		
+		url = githubRepoInput.getText();
 	}
 	
 	private void initTabB(){
 		// Tab B
 		disableDate((String) jsonObj.get(CREATED_AT));
 		contributorChoice.setItems(contributors);
-		
+	}
+	
+	public void updateTabB(){
 		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 		String formattedDate = startDate.getValue().format(formatter) + "T00:00:00Z";
-		
-		CommitParser commitParser = new CommitParser(githubRepoInput.getText(), contributorChoice.getValue(), formattedDate);
+		String authorName = contributorChoice.getValue();
+		CommitParser commitParser = new CommitParser(githubRepoInput.getText(), authorName, formattedDate);
 		checkError = commitParser.parseURL();
 		checkError();
 		
 		JSONArray jsonArr = commitParser.getJSONArr();
 		
+		// Date is key, Value is number of commits for the author
+		HashMap<String, Integer> hm = new HashMap<String, Integer>();
+		
 		// Do something with the jsonArr, commit per day maybe. jsonArr.get(0) stands for the latest commit
-		for(int i= 0 ; i < jsonArr.size(); i++){
+		for(int i= 0 ; i < jsonArr.size(); i++) {
+			// Commit syntax EG 
+			/*
+			"commit": {
+		      "author": {
+		        "name": "Wouter Dullaert",
+		        "email": "wouter.dullaert@gmail.com",
+		        "date": "2016-03-17T20:21:14Z"
+		      },
+		      "committer": {
+		        "name": "Wouter Dullaert",
+		        "email": "wouter.dullaert@gmail.com",
+		        "date": "2016-03-17T20:21:14Z"
+		      },
+		      "message": "Increased version number to v2.3.0",
+		      "tree": {
+		        "sha": "166d33193dabe1f9d61062bbb5329092b82e026f",
+		        "url": "https://api.github.com/repos/ymymym/MaterialDateTimePicker/git/trees/166d33193dabe1f9d61062bbb5329092b82e026f"
+		      },
+		      "url": "https://api.github.com/repos/ymymym/MaterialDateTimePicker/git/commits/d857cf3110f4796980da1e11a1887c0aa6e652b8",
+		      "comment_count": 0
+		    }
+		    */
+			JSONObject commitObj = (JSONObject) jsonArr.get(i);
+			commitObj = (JSONObject) commitObj.get(COMMIT);
+			JSONObject authorObj = (JSONObject) commitObj.get(AUTHOR);
+			String date = (String) authorObj.get(DATE);
+			date = date.substring(0, date.indexOf("T"));
 			
+			int noOfCommits = 0;
+			if(hm.get(date) != null){
+				noOfCommits = hm.get(date);
+			}
+			
+			noOfCommits += 1;
+			hm.put(date, noOfCommits);
 		}
+		
+		authorCommits.put(authorName, hm);
 	}
 	
 	// To disable date before creation
