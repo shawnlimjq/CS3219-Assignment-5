@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -209,7 +210,16 @@ public class MainPage extends AnchorPane {
             	// Use hashmap to populate histo
             	ObservableList<XYChart.Series<String, Integer>> list1 = FXCollections.observableArrayList();
             	Series<String, Integer> aSeries = new Series<String, Integer>();
-            	System.out.println(authorCommits.get(contributorChoice.getValue()));
+
+            	for (Map.Entry<String, HashMap<String, Integer>> authorEntry : authorCommits.entrySet()) {
+            	    String author = authorEntry.getKey();
+            	    HashMap<String, Integer> dateCount = authorEntry.getValue();
+            	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
+            	    	String date = dateEntry.getKey();
+            	    	int count = dateEntry.getValue();
+            	    }
+            	}
+            	
             	/*
             	if(startDate.getValue() != null && authorCommits.get(contributorChoice.getValue()).get(startDate.getValue()) != null ){
             		
