@@ -5,13 +5,17 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import javax.swing.event.ChangeListener;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -46,6 +50,8 @@ public class MainPage extends AnchorPane {
 	TranslateTransition closePanel;
 	private static final int TRANSITION_TIME = 350;
 	private static final int STARTPOSITION = 0;
+	private boolean checkError;
+	private JSONObject jsonObj;
 	
 	@FXML
 	private Label gitGuardLabel;
@@ -116,6 +122,15 @@ public class MainPage extends AnchorPane {
 		fxmlLoader.load();
 		initialise();
 	}
+
+	private void checkError(){
+		if (checkError==false){
+			errorLabel.setVisible(true);
+		} else{
+			errorLabel.setVisible(false);
+		}
+		
+	}
 	
 	public void initialise() {
 		initializeHiddenPanel();
@@ -128,65 +143,75 @@ public class MainPage extends AnchorPane {
 					
 					// Testing link - https://github.com/ymymym/MaterialDateTimePicker
 					Parser mainParser = new Parser(githubRepoInput.getText());
-					boolean checkError = mainParser.parseURL();
-					if (checkError==false){
-						errorLabel.setVisible(true);
-					} else{
-						errorLabel.setVisible(false);
-					}
+					checkError = mainParser.parseURL();
+					checkError();
 					
-					JSONObject jsonObj= mainParser.getJSONObj();
+					jsonObj= mainParser.getJSONObj();
 	
-					disableDate((String) jsonObj.get(CREATED_AT));
-				
-					// Tab A
-					ContriParser contriParser = new ContriParser(githubRepoInput.getText());
-					checkError = contriParser.parseURL();
-					
-					if (checkError==false){
-						errorLabel.setVisible(true);
-					} else{
-						errorLabel.setVisible(false);
-					}
-					
-					// Update UI with parser's JSONArray
-					JSONArray jsonArr = contriParser.getJSONArr();
-					
-					piechartA.setData(list);
-					
-					//Use this to add data to piechart
-					for(int i =0 ; i< jsonArr.size(); i++){
-
-						JSONObject innerJsonObj = (JSONObject) jsonArr.get(i);
-						list.add(new PieChart.Data((String) innerJsonObj.get(LOGIN), (Long) innerJsonObj.get(CONTRIBUTIONS)));
-						contributors.add((String) innerJsonObj.get(LOGIN));
-						
-					}
-					
-					
-					// Tab B
-					contributorChoice.setItems(contributors);
-					
-					DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
-					String formattedDate = startDate.getValue().format(formatter) + "T00:00:00Z";
-					
-					CommitParser commitParser = new CommitParser(githubRepoInput.getText(), contributorChoice.getValue(), formattedDate);
-					checkError = commitParser.parseURL();
-					
-					if (checkError==false){
-						errorLabel.setVisible(true);
-					} else{
-						errorLabel.setVisible(false);
-					}
-					
-					jsonArr = commitParser.getJSONArr();
-					
-					// Do something with the jsonArr, commit per day maybe. jsonArr.get(0) stands for the latest commit
-					
 					mainTabPane.visibleProperty().set(true);
 				}
 			}
 		});
+		
+		tabA.setOnSelectionChanged(new EventHandler<Event>() {
+            @Override
+            public void handle(Event t) {
+                if (tabA.isSelected()) {
+                	initTabA();
+                }
+            }
+        });
+		
+		tabB.setOnSelectionChanged(new EventHandler<Event>() {
+            @Override
+            public void handle(Event t) {
+                if (tabB.isSelected()) {
+                	initTabB();
+                }
+            }
+        });
+	}
+	
+	private void initTabA(){
+		// Tab A
+		ContriParser contriParser = new ContriParser(githubRepoInput.getText());
+		checkError = contriParser.parseURL();
+		checkError();
+		
+		// Update UI with parser's JSONArray
+		JSONArray jsonArr = contriParser.getJSONArr();
+		
+		piechartA.setData(list);
+		
+		//Use this to add data to piechart
+		for(int i =0 ; i< jsonArr.size(); i++){
+
+			JSONObject innerJsonObj = (JSONObject) jsonArr.get(i);
+			list.add(new PieChart.Data((String) innerJsonObj.get(LOGIN), (Long) innerJsonObj.get(CONTRIBUTIONS)));
+			contributors.add((String) innerJsonObj.get(LOGIN));
+			
+		}
+		
+	}
+	
+	private void initTabB(){
+		// Tab B
+		disableDate((String) jsonObj.get(CREATED_AT));
+		contributorChoice.setItems(contributors);
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+		String formattedDate = startDate.getValue().format(formatter) + "T00:00:00Z";
+		
+		CommitParser commitParser = new CommitParser(githubRepoInput.getText(), contributorChoice.getValue(), formattedDate);
+		checkError = commitParser.parseURL();
+		checkError();
+		
+		JSONArray jsonArr = commitParser.getJSONArr();
+		
+		// Do something with the jsonArr, commit per day maybe. jsonArr.get(0) stands for the latest commit
+		for(int i= 0 ; i < jsonArr.size(); i++){
+			
+		}
 	}
 	
 	// To disable date before creation
