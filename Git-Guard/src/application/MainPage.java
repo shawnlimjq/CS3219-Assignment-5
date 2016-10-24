@@ -17,7 +17,13 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DateCell;
@@ -55,8 +61,10 @@ public class MainPage extends AnchorPane {
 	private static final int STARTPOSITION = 0;
 	private boolean checkError;
 	private JSONObject jsonObj;
-	private HashMap<String, HashMap<String, Integer>> authorCommits = new HashMap<String, HashMap<String, Integer>>();
-	private String url = "";
+	private HashMap<String, HashMap<String, Integer>> authorCommits;
+	
+	private boolean loadA = false;
+	private boolean loadB = false;
 	
 	@FXML
 	private Label gitGuardLabel;
@@ -101,6 +109,8 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private PieChart piechartA;
 	@FXML
+	private BarChart<String, Integer> contributorChart;
+	@FXML
 	private ChoiceBox<String> contributorChoice;
 	@FXML
 	private DatePicker startDate;
@@ -144,16 +154,26 @@ public class MainPage extends AnchorPane {
 
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
-					toggleHiddenPanel();
-					
 					// Testing link - https://github.com/ymymym/MaterialDateTimePicker
 					Parser mainParser = new Parser(githubRepoInput.getText());
 					checkError = mainParser.parseURL();
 					checkError();
-					
-					jsonObj= mainParser.getJSONObj();
-					
-					mainTabPane.visibleProperty().set(true);
+				
+					if(checkError==true){
+						loadA = false;
+						loadB = false;
+
+						jsonObj= mainParser.getJSONObj();
+						mainTabPane.visibleProperty().set(true);
+						mainTabPane.disableProperty().set(false);
+						mainTabPane.getSelectionModel().select(tabA);
+						initTabA();
+						loadA = true;
+						
+					}else{
+						mainTabPane.visibleProperty().set(false);
+						mainTabPane.disableProperty().set(true);
+					}
 				}
 			}
 		});
@@ -162,9 +182,9 @@ public class MainPage extends AnchorPane {
             @Override
             public void handle(Event t) {
             	// Condition ensures init ran only once
-                if (tabA.isSelected() && url != githubRepoInput.getText()) {
+                if (tabA.isSelected() && !loadA) {
                 	initTabA();
-                	url = githubRepoInput.getText();
+                	loadA = true;
                 }
             }
         });
@@ -173,9 +193,9 @@ public class MainPage extends AnchorPane {
             @Override
             public void handle(Event t) {
         		// Condition ensures init ran only once
-                if (tabB.isSelected() && url != githubRepoInput.getText()) {
+                if (tabB.isSelected() && !loadB) {
                 	initTabB();
-                	url = githubRepoInput.getText();
+                	loadB = true;
                 }
             }
         });
@@ -187,6 +207,17 @@ public class MainPage extends AnchorPane {
                 // Update UI here
             	updateTabB();
             	// Use hashmap to populate histo
+            	ObservableList<XYChart.Series<String, Integer>> list1 = FXCollections.observableArrayList();
+            	Series<String, Integer> aSeries = new Series<String, Integer>();
+            	System.out.println(authorCommits.get(contributorChoice.getValue()));
+            	/*
+            	if(startDate.getValue() != null && authorCommits.get(contributorChoice.getValue()).get(startDate.getValue()) != null ){
+            		
+            		aSeries.getData().add(new Data<String, Integer>(startDate.getValue().toString(), authorCommits.get(contributorChoice.getValue()).get(startDate.getValue())));
+            	}
+            	*/
+            	list1.add(aSeries);
+            	contributorChart.setData(list1);
             }
         });
 	}
@@ -199,7 +230,7 @@ public class MainPage extends AnchorPane {
 		
 		// Update UI with parser's JSONArray
 		JSONArray jsonArr = contriParser.getJSONArr();
-		
+		list.clear();
 		piechartA.setData(list);
 		
 		//Use this to add data to piechart
@@ -220,18 +251,18 @@ public class MainPage extends AnchorPane {
 	}
 	
 	public void updateTabB(){
+		authorCommits = new HashMap<String, HashMap<String, Integer>>();
 		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 		String formattedDate = startDate.getValue().format(formatter) + "T00:00:00Z";
 		String authorName = contributorChoice.getValue();
 		CommitParser commitParser = new CommitParser(githubRepoInput.getText(), authorName, formattedDate);
 		checkError = commitParser.parseURL();
 		checkError();
-		
+
 		JSONArray jsonArr = commitParser.getJSONArr();
 		
 		// Date is key, Value is number of commits for the author
 		HashMap<String, Integer> hm = new HashMap<String, Integer>();
-		
 		// Do something with the jsonArr, commit per day maybe. jsonArr.get(0) stands for the latest commit
 		for(int i= 0 ; i < jsonArr.size(); i++) {
 			// Commit syntax EG 
@@ -260,6 +291,7 @@ public class MainPage extends AnchorPane {
 			commitObj = (JSONObject) commitObj.get(COMMIT);
 			JSONObject authorObj = (JSONObject) commitObj.get(AUTHOR);
 			String date = (String) authorObj.get(DATE);
+		
 			date = date.substring(0, date.indexOf("T"));
 			
 			int noOfCommits = 0;
