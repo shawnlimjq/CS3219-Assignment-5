@@ -18,8 +18,12 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DateCell;
@@ -57,6 +61,7 @@ public class MainPage extends AnchorPane {
 	private boolean checkError;
 	private JSONObject jsonObj;
 	private HashMap<String, HashMap<String, Integer>> authorCommits;
+	
 	private String url = "";
 	
 	@FXML
@@ -102,7 +107,7 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private PieChart piechartA;
 	@FXML
-	private BarChart contributorChart;
+	private BarChart<String, Integer> contributorChart;
 	@FXML
 	private ChoiceBox<String> contributorChoice;
 	@FXML
@@ -111,6 +116,8 @@ public class MainPage extends AnchorPane {
 	private Button addBtn;
 	
 	private static MainPage instance = null;
+	private static final String SOURCE = "source";
+
 
 	private MainPage() throws IOException {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MAIN_PAGE_FXML_URL));
@@ -154,10 +161,14 @@ public class MainPage extends AnchorPane {
 					
 					jsonObj= mainParser.getJSONObj();
 				
-					
-					mainTabPane.visibleProperty().set(true);
-					mainTabPane.disableProperty().set(false);
-					initTabA();
+					if(checkError==true){
+						mainTabPane.visibleProperty().set(true);
+						mainTabPane.disableProperty().set(false);
+						initTabA();
+					}else{
+						mainTabPane.visibleProperty().set(false);
+						mainTabPane.disableProperty().set(true);
+					}
 				}
 			}
 		});
@@ -191,8 +202,10 @@ public class MainPage extends AnchorPane {
                 // Update UI here
             	updateTabB();
             	// Use hashmap to populate histo
-            	ObservableList<XYChart.Series<String, Number>> list1 = FXCollections.observableArrayList();
-            	//list1.add(authorCommits.get(contributorChoice.getValue()).);
+            	ObservableList<XYChart.Series<String, Integer>> list1 = FXCollections.observableArrayList();
+            	Series<String, Integer> aSeries = new Series<String, Integer>();
+            	aSeries.getData().add(new Data<String, Integer>(startDate.getValue().toString(), authorCommits.get(contributorChoice.getValue()).get(startDate.getValue())));
+            	list1.add(aSeries);
             	contributorChart.setData(list1);
             }
         });
@@ -223,11 +236,14 @@ public class MainPage extends AnchorPane {
 	
 	private void initTabB(){
 		// Tab B
-		disableDate((String) jsonObj.get(CREATED_AT));
+		JSONObject sourceObj = (JSONObject) jsonObj.get(SOURCE);
+		disableDate((String) sourceObj.get(CREATED_AT));
+
 		contributorChoice.setItems(contributors);
 	}
 	
 	public void updateTabB(){
+		authorCommits = new HashMap<String, HashMap<String, Integer>>();
 		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 		String formattedDate = startDate.getValue().format(formatter) + "T00:00:00Z";
 		String authorName = contributorChoice.getValue();
