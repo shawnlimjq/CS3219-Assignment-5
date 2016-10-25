@@ -98,27 +98,4 @@ public class Data {
 		this.add(repo, mailList);
 	}
 
-	public static void main(String[] args) {
-		Data s3test = new Data();
-		ArrayList<String> emailList = new ArrayList<String>();
-		s3test.load();
-		emailList.add("1231234");
-		emailList.add("4565434");
-		s3test.dataSet.put("abc", emailList);
-		s3test.save();
-		
-		Data s2test = new Data();
-		emailList.remove(0);
-		emailList.add("78901234");
-		s2test.load();
-		s2test.add("abc", emailList);
-		s2test.save();
-		
-		
-		Data s1test = new Data();
-		s1test.load();
-		System.out.println(s1test.dataSet.get("abc").get(1));
-		System.out.println(s1test.dataSet.get("abc").get(2));
-	}
-
 }
