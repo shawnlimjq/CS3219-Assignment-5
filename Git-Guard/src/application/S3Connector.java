@@ -75,9 +75,4 @@ public class S3Connector {
 				.withCannedAcl(CannedAccessControlList.PublicRead));
 	}
 	
-	public static void main(String[] args) {
-		S3Connector s3 = new S3Connector("cs3219.ass5", "ass5_data");
-		s3.downloadFile("data.properties");
-	}
-	
 }
