@@ -17,6 +17,7 @@ public class Data {
 	public Map<String, ArrayList<String>> dataSet;
 	private Properties properties;
 	private File file;
+	private S3Connector s3client;
 
 	public Data() {
 		this.init();
@@ -26,6 +27,7 @@ public class Data {
 		dataSet = new HashMap<String, ArrayList<String>>();
 		properties = new Properties();
 		file = new File("data.properties");
+		s3client = new S3Connector("cs3219.ass5", "ass5_data");
 	}
 
 	public void save() {
@@ -34,6 +36,7 @@ public class Data {
 			FileOutputStream fileOut = new FileOutputStream(file);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(dataSet);
+			s3client.uploadFile(file.getName());
 			out.flush();
 			out.close();
 			fileOut.close();
@@ -48,6 +51,7 @@ public class Data {
 
 	public void load() {
 		try {
+			s3client.downloadFile(file.getName());
 			FileInputStream fileIn = new FileInputStream(file);
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			dataSet = (HashMap<String, ArrayList<String>>) in.readObject();
@@ -94,26 +98,27 @@ public class Data {
 		this.add(repo, mailList);
 	}
 
-	/*public static void main(String[] args) {
-		S3test s3test = new S3test();
+	public static void main(String[] args) {
+		Data s3test = new Data();
 		ArrayList<String> emailList = new ArrayList<String>();
-		emailList.add("123");
-		emailList.add("456");
+		s3test.load();
+		emailList.add("1231234");
+		emailList.add("4565434");
 		s3test.dataSet.put("abc", emailList);
 		s3test.save();
 		
-		S3test s2test = new S3test();
+		Data s2test = new Data();
 		emailList.remove(0);
-		emailList.add("789");
+		emailList.add("78901234");
 		s2test.load();
 		s2test.add("abc", emailList);
 		s2test.save();
 		
 		
-		S3test s1test = new S3test();
+		Data s1test = new Data();
 		s1test.load();
 		System.out.println(s1test.dataSet.get("abc").get(1));
 		System.out.println(s1test.dataSet.get("abc").get(2));
-	}*/
+	}
 
 }
