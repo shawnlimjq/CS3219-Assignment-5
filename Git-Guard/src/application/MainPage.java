@@ -147,6 +147,7 @@ public class MainPage extends AnchorPane {
 	
 	public void initialise() {
 		initializeHiddenPanel();
+		contributorChart.setAnimated(false);
 		Platform.runLater( () -> this.requestFocus() );
 		githubRepoInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
@@ -205,25 +206,26 @@ public class MainPage extends AnchorPane {
                 // Update UI here
             	updateTabB();
             	// Use hashmap to populate histo
-            	XYChart.Series<String, Integer> series = new XYChart.Series<>();
-            	contributorChart.getData().clear();
-            	for (Map.Entry<String, HashMap<String, Integer>> authorEntry : authorCommits.entrySet()) {
-            	    String author = authorEntry.getKey();
-            	    HashMap<String, Integer> dateCount = authorEntry.getValue();
-            	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
-            	    	String date = dateEntry.getKey();
-            	    	int count = dateEntry.getValue();
-            	    	System.out.println(date+" " + count);
-            	    	series.getData().add(new XYChart.Data<>(date, count));
-            	    }
-            	}
-            	//xAxis.setCategories(dateAxis);
-            	//list1.add(series);
-            	//contributorChart.setData(list1);
-            	contributorChart.getData().add(series);
+            	populateHisto();
             }
         });
 	}
+	
+	private void populateHisto(){
+		XYChart.Series<String, Integer> series = new XYChart.Series<>();
+    	contributorChart.getData().clear();
+    	for (Map.Entry<String, HashMap<String, Integer>> authorEntry : authorCommits.entrySet()) {
+    	    String author = authorEntry.getKey();
+    	    HashMap<String, Integer> dateCount = authorEntry.getValue();
+    	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
+    	    	String date = dateEntry.getKey();
+    	    	int count = dateEntry.getValue();
+    	    	series.getData().add(new XYChart.Data<>(date, count));
+    	    }
+    	}
+    	contributorChart.getData().add(series);
+	}
+	
 	
 	private void initTabA(){
 		// Tab A
