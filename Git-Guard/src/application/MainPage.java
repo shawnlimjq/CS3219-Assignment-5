@@ -30,6 +30,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -69,7 +70,15 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private Label errorLabel;
 	@FXML
+	private Label notifyTitle;
+	@FXML
 	private TextField githubRepoInput;
+	@FXML
+	private TextField notificationHours;
+	@FXML
+	private TextField notificationDays;
+	@FXML
+	private TextArea notifiyEmail;
 	@FXML
 	private TabPane mainTabPane;
 	@FXML
@@ -114,6 +123,8 @@ public class MainPage extends AnchorPane {
 	private DatePicker startDate;
 	@FXML
 	private Button addBtn;
+	@FXML
+	private Button addNoti;
 	
 	private static MainPage instance = null;
 
