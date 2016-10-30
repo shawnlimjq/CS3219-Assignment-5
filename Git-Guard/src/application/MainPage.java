@@ -262,7 +262,11 @@ public class MainPage extends AnchorPane {
 	private void initTabB(){
 		// Tab B
 		JSONObject sourceObj = (JSONObject) jsonObj.get(SOURCE);
-		disableDate((String) sourceObj.get(CREATED_AT));
+		if(sourceObj!=null){
+			disableDate((String) sourceObj.get(CREATED_AT));
+		} else{
+			disableDate((String) jsonObj.get(CREATED_AT));
+		}
 		contributorChoice.setItems(contributors);
 	}
 	
