@@ -20,8 +20,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -119,6 +119,8 @@ public class MainPage extends AnchorPane {
 	private PieChart piechartA;
 	@FXML
 	private BarChart<String, Integer> contributorChart;
+	@FXML
+	private ScatterChart<String, Integer> contributorScatter;
 	@FXML
 	private ChoiceBox<String> contributorChoice;
 	@FXML
@@ -221,6 +223,7 @@ public class MainPage extends AnchorPane {
             	updateTabB();
             	// Use hashmap to populate histo
             	populateHisto();
+            	populateScatter();
             }
         });
 		
@@ -255,6 +258,20 @@ public class MainPage extends AnchorPane {
     	    }
     	}
     	contributorChart.getData().add(series);
+	}
+	
+	private void populateScatter(){
+		XYChart.Series<String, Integer> series = new XYChart.Series<>();
+    	for (Map.Entry<String, HashMap<String, Integer>> authorEntry : authorCommits.entrySet()) {
+    	    String author = authorEntry.getKey();
+    	    HashMap<String, Integer> dateCount = authorEntry.getValue();
+    	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
+    	    	String date = dateEntry.getKey();
+    	    	int count = dateEntry.getValue();
+    	    	series.getData().add(new XYChart.Data<>(date, count));
+    	    }
+    	}
+    	contributorScatter.getData().add(series);
 	}
 	
 	
