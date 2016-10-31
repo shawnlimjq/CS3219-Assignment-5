@@ -234,7 +234,8 @@ public class MainPage extends AnchorPane {
 	            	ArrayList<String> emailAdds = new ArrayList<String>(Arrays.asList(emails.split("\n")));
 	            	
 	            	if(emailAdds.size()!= 0 && mainParser != null){
-	            		// Do something with mainParser.getUrl() and the emailAdds
+	            		// Do something with mainParser.getUrl() and the emailAdds. 
+	            		// notificationDays.getText() and notificationHours.getTexT() as well
 	            	}
             	}
             }
