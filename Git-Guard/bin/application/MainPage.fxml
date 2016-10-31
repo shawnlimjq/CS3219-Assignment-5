@@ -94,12 +94,14 @@
       <AnchorPane fx:id="hiddenMenu" layoutX="-278.0" layoutY="222.0" prefHeight="311.0" prefWidth="278.0" style="-fx-background-color: white;">
          <children>
             <Button fx:id="addNoti" layoutX="120.0" layoutY="259.0" mnemonicParsing="false" text="Add" />
-            <TextArea fx:id="notifiyText" layoutX="19.0" layoutY="50.0" prefHeight="175.0" prefWidth="240.0" />
+            <TextArea fx:id="notifiyEmail" layoutX="19.0" layoutY="66.0" prefHeight="67.0" prefWidth="240.0" promptText="Emails" />
             <Label fx:id="notifyTitle" layoutX="97.0" layoutY="14.0" text="Notification">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </Label>
+            <TextField fx:id="notificationDays" layoutX="18.0" layoutY="156.0" prefHeight="25.0" prefWidth="240.0" promptText="Days: " />
+            <TextField fx:id="notificationHours" layoutX="18.0" layoutY="203.0" prefHeight="25.0" prefWidth="240.0" promptText="Hours: " />
          </children>
       </AnchorPane>
    </children>

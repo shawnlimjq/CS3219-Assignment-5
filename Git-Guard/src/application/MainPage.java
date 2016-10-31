@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +62,7 @@ public class MainPage extends AnchorPane {
 	private boolean checkError;
 	private JSONObject jsonObj;
 	private HashMap<String, HashMap<String, Integer>> authorCommits;
+	private Parser mainParser;
 	
 	private boolean loadA = false;
 	private boolean loadB = false;
@@ -78,7 +80,7 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private TextField notificationDays;
 	@FXML
-	private TextArea notifiyEmail;
+	private TextArea notifyEmail;
 	@FXML
 	private TabPane mainTabPane;
 	@FXML
@@ -160,12 +162,13 @@ public class MainPage extends AnchorPane {
 		initializeHiddenPanel();
 		contributorChart.setAnimated(false);
 		Platform.runLater( () -> this.requestFocus() );
+		
 		githubRepoInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
 					// Testing link - https://github.com/ymymym/MaterialDateTimePicker
-					Parser mainParser = new Parser(githubRepoInput.getText());
+					mainParser = new Parser(githubRepoInput.getText());
 					checkError = mainParser.parseURL();
 					checkError();
 				
@@ -220,6 +223,22 @@ public class MainPage extends AnchorPane {
             	populateHisto();
             }
         });
+		
+		addNoti.setOnMouseClicked(new EventHandler<MouseEvent>()
+		{
+            @Override
+            public void handle(MouseEvent t) {
+                // Wenhao, link to your s3 service here. Email address delimited by new line
+            	String emails = notifyEmail.getText();
+            	if(!emails.equals("")){
+	            	ArrayList<String> emailAdds = new ArrayList<String>(Arrays.asList(emails.split("\n")));
+	            	
+	            	if(emailAdds.size()!= 0 && mainParser != null){
+	            		// Do something with mainParser.getUrl() and the emailAdds
+	            	}
+            	}
+            }
+		});
 	}
 	
 	private void populateHisto(){
