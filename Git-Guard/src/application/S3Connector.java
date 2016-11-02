@@ -57,7 +57,7 @@ public class S3Connector {
 			    outputStream.close();
 			    
 			} else {
-				System.out.println("No existing data, creating new data file..");
+				System.out.println("No existing " + fileName + ", creating new " + fileName + " file..");
 			}
 		    
 		} catch (IOException e) {
