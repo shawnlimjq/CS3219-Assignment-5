@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -52,9 +53,11 @@ public class MainPage extends AnchorPane {
 	private static final String LOGIN = "login";
 	private static final String CREATED_AT = "created_at";
 	private static final String COMMIT = "commit";
-	private static final String AUTHOR = "author";
+	private static final String COMMITTER = "committer";
 	private static final String DATE = "date";
 	private static final String SOURCE = "source";
+	private static final String MESSAGE = "message";
+	private static final String NAME = "name";
 	
 	TranslateTransition openPanel;
 	TranslateTransition closePanel;
@@ -62,7 +65,11 @@ public class MainPage extends AnchorPane {
 	private static final int STARTPOSITION = 0;
 	private boolean checkError;
 	private JSONObject jsonObj;
-	private HashMap<String, HashMap<String, Integer>> authorCommits;
+	
+	// Can store at a storage
+	private HashMap<String, HashMap<String, Integer>> committerCommits;
+	private HashMap<String, HashSet<String>> directoryListing;
+	
 	private Parser mainParser;
 	private Data data;
 	
@@ -254,9 +261,9 @@ public class MainPage extends AnchorPane {
 	private void populateHisto(){
 		XYChart.Series<String, Integer> series = new XYChart.Series<>();
     	contributorChart.getData().clear();
-    	for (Map.Entry<String, HashMap<String, Integer>> authorEntry : authorCommits.entrySet()) {
-    	    String author = authorEntry.getKey();
-    	    HashMap<String, Integer> dateCount = authorEntry.getValue();
+    	for (Map.Entry<String, HashMap<String, Integer>> committerEntry : committerCommits.entrySet()) {
+    	    String committer = committerEntry.getKey();
+    	    HashMap<String, Integer> dateCount = committerEntry.getValue();
     	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
     	    	String date = dateEntry.getKey();
     	    	int count = dateEntry.getValue();
@@ -268,9 +275,9 @@ public class MainPage extends AnchorPane {
 	
 	private void populateScatter(){
 		XYChart.Series<String, Integer> series = new XYChart.Series<>();
-    	for (Map.Entry<String, HashMap<String, Integer>> authorEntry : authorCommits.entrySet()) {
-    	    String author = authorEntry.getKey();
-    	    HashMap<String, Integer> dateCount = authorEntry.getValue();
+    	for (Map.Entry<String, HashMap<String, Integer>> committerEntry : committerCommits.entrySet()) {
+    	    String committer = committerEntry.getKey();
+    	    HashMap<String, Integer> dateCount = committerEntry.getValue();
     	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
     	    	String date = dateEntry.getKey();
     	    	int count = dateEntry.getValue();
@@ -287,51 +294,108 @@ public class MainPage extends AnchorPane {
 		checkError = contriParser.parseURL();
 		checkError();
 		
-		// Update UI with parser's JSONArray
-		JSONArray jsonArr = contriParser.getJSONArr();
-		list.clear();
-		piechartA.setData(list);
-		
-		//Use this to add data to piechart
-		for(int i =0 ; i< jsonArr.size(); i++){
-
-			JSONObject innerJsonObj = (JSONObject) jsonArr.get(i);
-			list.add(new PieChart.Data((String) innerJsonObj.get(LOGIN), (Long) innerJsonObj.get(CONTRIBUTIONS)));
-			contributors.add((String) innerJsonObj.get(LOGIN));
+		if(checkError){
+			// Update UI with parser's JSONArray
+			JSONArray jsonArr = contriParser.getJSONArr();
+			list.clear();
+			piechartA.setData(list);
 			
+			//Use this to add data to piechart
+			for(int i =0 ; i< jsonArr.size(); i++){
+	
+				JSONObject innerJsonObj = (JSONObject) jsonArr.get(i);
+				list.add(new PieChart.Data((String) innerJsonObj.get(LOGIN), (Long) innerJsonObj.get(CONTRIBUTIONS)));
+				contributors.add((String) innerJsonObj.get(LOGIN));
+				
+			}
 		}
 	}
 	
 	private void initTabB(){
 		// Tab B
-		JSONObject sourceObj = (JSONObject) jsonObj.get(SOURCE);
-		if(sourceObj!=null){
-			disableDate((String) sourceObj.get(CREATED_AT));
-		} else{
-			disableDate((String) jsonObj.get(CREATED_AT));
+		if(checkError){
+			JSONObject sourceObj = (JSONObject) jsonObj.get(SOURCE);
+			if(sourceObj!=null){
+				disableDate((String) sourceObj.get(CREATED_AT));
+			} else{
+				disableDate((String) jsonObj.get(CREATED_AT));
+			}
+			contributorChoice.setItems(contributors);
 		}
-		contributorChoice.setItems(contributors);
+	}
+	
+	// Keep going in this method if file or directory clicked
+	private void updateFileChooser(String initPath){
+		FileParser fileParser = new FileParser(githubRepoInput.getText(), initPath);
+		checkError = fileParser.parseURL();
+		checkError();
+		
+		if(checkError) {
+			// Update UI with parser's JSONArray
+			JSONArray jsonArr = fileParser.getJSONArr();
+			
+			//Use this to add data to directory listing
+			for(int i =0 ; i< jsonArr.size(); i++){
+				// Show first lvl objects
+				// TODO
+				JSONObject innerJsonObj = (JSONObject) jsonArr.get(i);
+				String [] path = ((String) innerJsonObj.get("path")).split("/");
+				if(innerJsonObj.get("type").equals("file")){
+					// Show as file. Show commit when clicked
+					String fileName = path[path.length-1];
+					
+				} else if (innerJsonObj.get("type").equals("dir")){
+					// Show as directory
+					String dirName = path[path.length - 1];
+				}
+			}
+		}
+	}
+	
+	// Call this after a file is clicked
+	private void displayCommits(String filePath){
+		CommitParser commitParser = new CommitParser(githubRepoInput.getText(), "", "", filePath);
+		checkError = commitParser.parseURL();
+		checkError();
+		
+		if(checkError) {
+			// Update UI with parser's JSONArray
+			JSONArray jsonArr = commitParser.getJSONArr();
+			
+			//Use this to add data to directory listing
+			for(int i = 0 ; i< jsonArr.size(); i++){
+				JSONObject commitObj = (JSONObject) jsonArr.get(i);
+				commitObj = (JSONObject) commitObj.get(COMMIT);
+				JSONObject committerObj = (JSONObject) commitObj.get(COMMITTER);
+				
+				String msg = (String) commitObj.get(MESSAGE);
+				String date = (String) committerObj.get(DATE);
+				String name = (String )committerObj.get(NAME);
+				// Show MSG , date , committer 
+				// TODO : update UI with this 3 data
+			}
+		}
 	}
 	
 	public void updateTabB(){
-		authorCommits = new HashMap<String, HashMap<String, Integer>>();
+		committerCommits = new HashMap<String, HashMap<String, Integer>>();
 		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 		String formattedDate = startDate.getValue().format(formatter) + "T00:00:00Z";
-		String authorName = contributorChoice.getValue();
-		CommitParser commitParser = new CommitParser(githubRepoInput.getText(), authorName, formattedDate);
+		String committerName = contributorChoice.getValue();
+		CommitParser commitParser = new CommitParser(githubRepoInput.getText(), committerName, formattedDate, "");
 		checkError = commitParser.parseURL();
 		checkError();
 
 		JSONArray jsonArr = commitParser.getJSONArr();
 		
-		// Date is key, Value is number of commits for the author
+		// Date is key, Value is number of commits for the committer
 		HashMap<String, Integer> hm = new HashMap<String, Integer>();
 		// Do something with the jsonArr, commit per day maybe. jsonArr.get(0) stands for the latest commit
 		for(int i= 0 ; i < jsonArr.size(); i++) {
 			// Commit syntax EG 
 			/*
 			"commit": {
-		      "author": {
+		      "committer": {
 		        "name": "Wouter Dullaert",
 		        "email": "wouter.dullaert@gmail.com",
 		        "date": "2016-03-17T20:21:14Z"
@@ -352,8 +416,8 @@ public class MainPage extends AnchorPane {
 		    */
 			JSONObject commitObj = (JSONObject) jsonArr.get(i);
 			commitObj = (JSONObject) commitObj.get(COMMIT);
-			JSONObject authorObj = (JSONObject) commitObj.get(AUTHOR);
-			String date = (String) authorObj.get(DATE);
+			JSONObject committerObj = (JSONObject) commitObj.get(COMMITTER);
+			String date = (String) committerObj.get(DATE);
 		
 			date = date.substring(0, date.indexOf("T"));
 			
@@ -366,7 +430,7 @@ public class MainPage extends AnchorPane {
 			hm.put(date, noOfCommits);
 		}
 		
-		authorCommits.put(authorName, hm);
+		committerCommits.put(committerName, hm);
 	}
 	
 	// To disable date before creation
