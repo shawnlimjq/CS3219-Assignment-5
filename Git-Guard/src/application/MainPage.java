@@ -131,6 +131,8 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private PieChart piechartA;
 	@FXML
+	private PieChart piechartLine;
+	@FXML
 	private BarChart<String, Integer> contributorChart;
 	@FXML
 	private ScatterChart<String, Integer> contributorScatter;

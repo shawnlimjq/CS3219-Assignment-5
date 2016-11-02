@@ -83,7 +83,10 @@
                <content>
                   <ScrollPane fx:id="tabDSP" prefHeight="200.0" prefWidth="200.0">
                     <content>
-                      <AnchorPane fx:id="tabDAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1034.0" />
+                      <AnchorPane fx:id="tabDAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1034.0">
+                           <children>
+                              <PieChart fx:id="piechartLine" layoutX="267.0" layoutY="83.0" />
+                           </children></AnchorPane>
                     </content>
                   </ScrollPane>
                </content>
