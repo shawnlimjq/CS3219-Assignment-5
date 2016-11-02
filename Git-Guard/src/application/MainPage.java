@@ -1,6 +1,10 @@
 package application;
 	
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -370,10 +374,26 @@ public class MainPage extends AnchorPane {
 				
 				String msg = (String) commitObj.get(MESSAGE);
 				String date = (String) committerObj.get(DATE);
-				String name = (String )committerObj.get(NAME);
+				String name = (String) committerObj.get(NAME);
 				// Show MSG , date , committer 
 				// TODO : update UI with this 3 data
 			}
+		}
+	}
+	
+	// Call this if select code chunk is clicked
+	private void displayContent(String fileURL){
+		FileDownloader fileDownloader = new FileDownloader(fileURL);
+		fileDownloader.downloadFile();
+		
+		FileReader fileReader = new FileReader(fileURL);
+		fileReader.readFile();
+		
+		ArrayList<String> content = fileReader.getContent();
+		
+		// TODO : print the content. They are in line
+		for(int i =0 ; i < content.size(); i++){
+			
 		}
 	}
 	
