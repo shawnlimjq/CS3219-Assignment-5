@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,6 +64,7 @@ public class MainPage extends AnchorPane {
 	private JSONObject jsonObj;
 	private HashMap<String, HashMap<String, Integer>> authorCommits;
 	private Parser mainParser;
+	private Data data;
 	
 	private boolean loadA = false;
 	private boolean loadB = false;
@@ -164,6 +166,7 @@ public class MainPage extends AnchorPane {
 		initializeHiddenPanel();
 		contributorChart.setAnimated(false);
 		Platform.runLater( () -> this.requestFocus() );
+		data = new Data();
 		
 		githubRepoInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
@@ -173,6 +176,7 @@ public class MainPage extends AnchorPane {
 					mainParser = new Parser(githubRepoInput.getText());
 					checkError = mainParser.parseURL();
 					checkError();
+					data.checkIn(mainParser.getUrl(), new Date());
 				
 					if(checkError==true){
 						loadA = false;
@@ -239,6 +243,8 @@ public class MainPage extends AnchorPane {
 	            	if(emailAdds.size()!= 0 && mainParser != null){
 	            		// Do something with mainParser.getUrl() and the emailAdds. 
 	            		// notificationDays.getText() and notificationHours.getTexT() as well
+	            		data.add(mainParser.getUrl(), emailAdds);
+	            		data.save();
 	            	}
             	}
             }
