@@ -144,9 +144,4 @@ public class Data {
 			lastCheckTime.put(repo, newTimestamp);
 		}
 	}
-	
-	public static void main(String[] args) throws InterruptedException {
-		Date currentTime = new Date();
-		String timeStamp = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(currentTime);
-	}
 }
