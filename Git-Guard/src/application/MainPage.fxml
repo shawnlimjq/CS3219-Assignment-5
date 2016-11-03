@@ -70,7 +70,7 @@
                   </ScrollPane>
                </content>
           </Tab>
-            <Tab text="Tab C">
+            <Tab fx:id="tabC" text="Tab C">
                <content>
                   <ScrollPane fx:id="tabCSP" prefHeight="200.0" prefWidth="200.0">
                     <content>
@@ -79,7 +79,7 @@
                   </ScrollPane>
                </content>
             </Tab>
-            <Tab text="Tab D">
+            <Tab fx:id="tabD" text="Tab D">
                <content>
                   <ScrollPane fx:id="tabDSP" prefHeight="200.0" prefWidth="200.0">
                     <content>

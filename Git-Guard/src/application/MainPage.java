@@ -83,6 +83,8 @@ public class MainPage extends AnchorPane {
 	
 	private boolean loadA = false;
 	private boolean loadB = false;
+	private boolean loadC = false;
+	private boolean loadD = false;
 	
 	@FXML
 	private Label gitGuardLabel;
@@ -232,6 +234,17 @@ public class MainPage extends AnchorPane {
                 if (tabB.isSelected() && !loadB) {
                 	initTabB();
                 	loadB = true;
+                }
+            }
+        });
+		
+		tabD.setOnSelectionChanged(new EventHandler<Event>() {
+            @Override
+            public void handle(Event t) {
+        		// Condition ensures init ran only once
+                if (tabD.isSelected() && !loadD) {
+                	updateTabD();
+                	loadD = true;
                 }
             }
         });
@@ -413,8 +426,8 @@ public class MainPage extends AnchorPane {
 			// Update UI with parser's JSONArray
 			JSONArray jsonArr = statsParser.getJSONArr();
 			// TODO : update accordingly
-			// list.clear();
-			// piechartD.setData(list);
+			list.clear();
+			piechartLine.setData(list);
 			
 			//Use this to add data to piechart. FOR each author
 			for(int i =0 ; i< jsonArr.size(); i++){
@@ -432,7 +445,7 @@ public class MainPage extends AnchorPane {
 				JSONObject authorObj = (JSONObject) innerJsonObj.get(AUTHOR);
 				
 				// TODO : shawn uncomment this and replace the list Tab D
-				// list.add(new PieChart.Data((String) authorObj.get(LOGIN), addition - deletion));
+				list.add(new PieChart.Data((String) authorObj.get(LOGIN), addition - deletion));
 			}
 		}
 	}
