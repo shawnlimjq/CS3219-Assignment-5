@@ -490,7 +490,6 @@ public class MainPage extends AnchorPane {
 					JSONObject weekObj = (JSONObject) weeksArr.get(z);
 					addition += (long) (weekObj.get(ADDITION));
 					deletion += (long) (weekObj.get(DELETION));
-					System.out.println(addition +" "+deletion);
 				}
 				
 				JSONObject authorObj = (JSONObject) innerJsonObj.get(AUTHOR);
@@ -498,6 +497,13 @@ public class MainPage extends AnchorPane {
 				// TODO : shawn uncomment this and replace the list Tab D
 				dList.add(new PieChart.Data((String) authorObj.get(LOGIN), addition - deletion));
 			}
+			dList.forEach(data ->
+            data.nameProperty().bind(
+                    Bindings.concat(
+                            data.getName(), "-", data.pieValueProperty(), " Lines"
+                    )
+            )
+    );
 		}
 	}
 	

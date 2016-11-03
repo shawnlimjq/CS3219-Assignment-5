@@ -85,7 +85,7 @@
                     <content>
                       <AnchorPane fx:id="tabDAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1034.0">
                            <children>
-                              <PieChart fx:id="piechartLine" layoutX="267.0" layoutY="83.0" />
+                              <PieChart fx:id="piechartLine" animated="false" layoutX="42.0" layoutY="21.0" prefHeight="529.0" prefWidth="971.0" />
                            </children></AnchorPane>
                     </content>
                   </ScrollPane>
