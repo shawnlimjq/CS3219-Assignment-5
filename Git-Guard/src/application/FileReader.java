@@ -21,15 +21,15 @@ public class FileReader {
 	public void readFile(){
 		content.clear();
 		Path file = Paths.get(fileURL.replace("https://", ""));
-		try (InputStream in = Files.newInputStream(file);
-		    BufferedReader reader =
-		      new BufferedReader(new InputStreamReader(in))) {
+		try (
+			InputStream in = Files.newInputStream(file);
+		    BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {
 		    	content.add(line);
 		    }
-		} catch (IOException x) {
-		    System.err.println(x);
+		} catch (Exception e) {
+		    System.out.println(e);
 		}
 	}
 	
