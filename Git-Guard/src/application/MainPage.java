@@ -13,18 +13,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.ScatterChart;
@@ -39,10 +42,13 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.Glow;
+import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -51,6 +57,7 @@ public class MainPage extends AnchorPane {
 	
 	private static final String MAIN_PAGE_FXML_URL = "MainPage.fxml";
 	private static ObservableList<PieChart.Data> list = FXCollections.observableList(new ArrayList<PieChart.Data>());
+	private static ObservableList<PieChart.Data> dList = FXCollections.observableList(new ArrayList<PieChart.Data>());
 	private static ObservableList<String> contributors  = FXCollections.observableList(new ArrayList<String>());
 	
 	private static final String CONTRIBUTIONS = "contributions";
@@ -152,6 +159,8 @@ public class MainPage extends AnchorPane {
 	private Button addNoti;
 	
 	private static MainPage instance = null;
+	
+	private String pieColors[];
 
 	private MainPage() throws IOException {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MAIN_PAGE_FXML_URL));
@@ -178,10 +187,44 @@ public class MainPage extends AnchorPane {
 		} else{
 			errorLabel.setVisible(false);
 		}
-		
 	}
 	
+	/*private void applyCustomPieChartColor(ObservableList<PieChart.Data> pieChartData) {
+		  int i = 0;
+		  for (PieChart.Data data : pieChartData) {
+		    data.getNode().setStyle(
+		      "-fx-pie-color: " + pieColors[i % pieColors.length] + ";"
+		    );
+		    i++;
+		  }
+		}
+	
+	private void initialisePieColors(){
+		pieColors = new String[20];
+		pieColors[0] = "#ffd700";
+		pieColors[1] = "#ffa500";
+		pieColors[2] = "#860061";
+		pieColors[3] = "#adff2f";
+		pieColors[4] = "#ff5700";
+		pieColors[5] = "#ffd700";
+		pieColors[6] = "#ffd700";
+		pieColors[7] = "#ffd700";
+		pieColors[8] = "#ffd700";
+		pieColors[9] = "#ffd700";
+		pieColors[10] = "#ffd700";
+		pieColors[11] = "#ffd700";
+		pieColors[12] = "#ffd700";
+		pieColors[13] = "#ffd700";
+		pieColors[14] = "#ffd700";
+		pieColors[15] = "#ffd700";
+		pieColors[16] = "#ffd700";
+		pieColors[17] = "#ffd700";
+		pieColors[18] = "#ffd700";
+		pieColors[19] = "#ffd700";
+	}
+	*/
 	public void initialise() {
+		//initialisePieColors();
 		initializeHiddenPanel();
 		contributorChart.setAnimated(false);
 		Platform.runLater( () -> this.requestFocus() );
@@ -322,7 +365,6 @@ public class MainPage extends AnchorPane {
 			JSONArray jsonArr = contriParser.getJSONArr();
 			list.clear();
 			piechartA.setData(list);
-			
 			//Use this to add data to piechart
 			for(int i =0 ; i< jsonArr.size(); i++){
 	
@@ -331,6 +373,14 @@ public class MainPage extends AnchorPane {
 				contributors.add((String) innerJsonObj.get(LOGIN));
 				
 			}
+			list.forEach(data ->
+             data.nameProperty().bind(
+                     Bindings.concat(
+                             data.getName(), "-", data.pieValueProperty(), " Commits"
+                     )
+             )
+     );
+			//applyCustomPieChartColor(list);
 		}
 	}
 	
@@ -426,26 +476,27 @@ public class MainPage extends AnchorPane {
 			// Update UI with parser's JSONArray
 			JSONArray jsonArr = statsParser.getJSONArr();
 			// TODO : update accordingly
-			list.clear();
-			piechartLine.setData(list);
+			dList.clear();
+			piechartLine.setData(dList);
 			
 			//Use this to add data to piechart. FOR each author
 			for(int i =0 ; i< jsonArr.size(); i++){
 	
 				JSONObject innerJsonObj = (JSONObject) jsonArr.get(i);
 				JSONArray weeksArr = (JSONArray) innerJsonObj.get(WEEKS);
-				int addition = 0;
-				int deletion = 0;
+				long addition = 0;
+				long deletion = 0;
 				for(int z = 0 ; z < weeksArr.size(); z++){
 					JSONObject weekObj = (JSONObject) weeksArr.get(z);
-					addition += (int) (weekObj.get(ADDITION));
-					deletion += (int) (weekObj.get(DELETION));
+					addition += (long) (weekObj.get(ADDITION));
+					deletion += (long) (weekObj.get(DELETION));
+					System.out.println(addition +" "+deletion);
 				}
 				
 				JSONObject authorObj = (JSONObject) innerJsonObj.get(AUTHOR);
 				
 				// TODO : shawn uncomment this and replace the list Tab D
-				list.add(new PieChart.Data((String) authorObj.get(LOGIN), addition - deletion));
+				dList.add(new PieChart.Data((String) authorObj.get(LOGIN), addition - deletion));
 			}
 		}
 	}
