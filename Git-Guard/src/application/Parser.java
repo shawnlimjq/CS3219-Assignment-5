@@ -11,9 +11,11 @@ public class Parser {
 	private String url;
 	private JSONArray jsonArr;
 	private JSONObject jsonObj;
+	private String oldUrl;
 	
 	public Parser(String url){
 		this.url = url;
+		this.oldUrl = url;
 		jsonArr = new JSONArray();
 		jsonObj = new JSONObject();
 		convertToAPIURL();
@@ -42,7 +44,7 @@ public class Parser {
 		    while (scan.hasNext())
 		        str += scan.nextLine();
 		    scan.close();
-		    if(this instanceof ContriParser || this instanceof CommitParser || this instanceof FileParser){
+		    if(this instanceof ContriParser || this instanceof CommitParser || this instanceof FileParser || this instanceof StatsParser){
 		    	jsonArr = (JSONArray) parser.parse(str);
 		    } else {
 		    	jsonObj = (JSONObject) parser.parse(str);
@@ -69,5 +71,9 @@ public class Parser {
 	
 	public String getUrl(){
 		return url;
+	}
+	
+	public String getOldUrl(){
+		return oldUrl;
 	}
 }

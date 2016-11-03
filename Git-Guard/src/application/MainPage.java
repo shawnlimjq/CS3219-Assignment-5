@@ -195,7 +195,7 @@ public class MainPage extends AnchorPane {
 					mainParser = new Parser(githubRepoInput.getText());
 					checkError = mainParser.parseURL();
 					checkError();
-					data.checkIn(mainParser.getUrl(), new Date());
+					data.checkIn(mainParser.getOldUrl(), new Date());
 				
 					if(checkError==true){
 						loadA = false;
@@ -273,7 +273,7 @@ public class MainPage extends AnchorPane {
 	            	if(emailAdds.size()!= 0 && mainParser != null){
 	            		// Do something with mainParser.getUrl() and the emailAdds. 
 	            		// notificationDays.getText() and notificationHours.getTexT() as well
-	            		data.add(mainParser.getUrl(), emailAdds);
+	            		data.add(mainParser.getOldUrl(), emailAdds);
 	            		data.save();
 	            	}
             	}
@@ -349,7 +349,7 @@ public class MainPage extends AnchorPane {
 	
 	// Keep going in this method if file or directory clicked
 	private void updateFileChooser(String initPath){
-		FileParser fileParser = new FileParser(mainParser.getUrl(), initPath);
+		FileParser fileParser = new FileParser(mainParser.getOldUrl(), initPath);
 		checkError = fileParser.parseURL();
 		checkError();
 		
@@ -377,7 +377,7 @@ public class MainPage extends AnchorPane {
 	
 	// Call this after a file is clicked
 	private void displayCommits(String filePath){
-		CommitParser commitParser = new CommitParser(mainParser.getUrl(), "", "", filePath);
+		CommitParser commitParser = new CommitParser(mainParser.getOldUrl(), "", "", filePath);
 		checkError = commitParser.parseURL();
 		checkError();
 		
@@ -418,7 +418,7 @@ public class MainPage extends AnchorPane {
 	
 	private void updateTabD(){
 		// Tab D
-		StatsParser statsParser = new StatsParser(mainParser.getUrl());
+		StatsParser statsParser = new StatsParser(mainParser.getOldUrl());
 		checkError = statsParser.parseURL();
 		checkError();
 		
@@ -456,7 +456,7 @@ public class MainPage extends AnchorPane {
 		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 		String formattedDate = startDate.getValue().format(formatter) + "T00:00:00Z";
 		String committerName = contributorChoice.getValue();
-		CommitParser commitParser = new CommitParser(mainParser.getUrl(), committerName, formattedDate, "");
+		CommitParser commitParser = new CommitParser(mainParser.getOldUrl(), committerName, formattedDate, "");
 		checkError = commitParser.parseURL();
 		checkError();
 
