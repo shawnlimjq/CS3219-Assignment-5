@@ -58,10 +58,14 @@ public class MainPage extends AnchorPane {
 	private static final String CREATED_AT = "created_at";
 	private static final String COMMIT = "commit";
 	private static final String COMMITTER = "committer";
+	private static final String AUTHOR = "author";
 	private static final String DATE = "date";
+	private static final String WEEKS = "weeks";
 	private static final String SOURCE = "source";
 	private static final String MESSAGE = "message";
 	private static final String NAME = "name";
+	private static final String ADDITION = "a";
+	private static final String DELETION = "d";
 	
 	TranslateTransition openPanel;
 	TranslateTransition closePanel;
@@ -332,7 +336,7 @@ public class MainPage extends AnchorPane {
 	
 	// Keep going in this method if file or directory clicked
 	private void updateFileChooser(String initPath){
-		FileParser fileParser = new FileParser(githubRepoInput.getText(), initPath);
+		FileParser fileParser = new FileParser(mainParser.getUrl(), initPath);
 		checkError = fileParser.parseURL();
 		checkError();
 		
@@ -360,7 +364,7 @@ public class MainPage extends AnchorPane {
 	
 	// Call this after a file is clicked
 	private void displayCommits(String filePath){
-		CommitParser commitParser = new CommitParser(githubRepoInput.getText(), "", "", filePath);
+		CommitParser commitParser = new CommitParser(mainParser.getUrl(), "", "", filePath);
 		checkError = commitParser.parseURL();
 		checkError();
 		
@@ -399,12 +403,47 @@ public class MainPage extends AnchorPane {
 		}
 	}
 	
+	private void updateTabD(){
+		// Tab D
+		StatsParser statsParser = new StatsParser(mainParser.getUrl());
+		checkError = statsParser.parseURL();
+		checkError();
+		
+		if(checkError){
+			// Update UI with parser's JSONArray
+			JSONArray jsonArr = statsParser.getJSONArr();
+			// TODO : update accordingly
+			// list.clear();
+			// piechartD.setData(list);
+			
+			//Use this to add data to piechart. FOR each author
+			for(int i =0 ; i< jsonArr.size(); i++){
+	
+				JSONObject innerJsonObj = (JSONObject) jsonArr.get(i);
+				JSONArray weeksArr = (JSONArray) innerJsonObj.get(WEEKS);
+				int addition = 0;
+				int deletion = 0;
+				for(int z = 0 ; z < weeksArr.size(); z++){
+					JSONObject weekObj = (JSONObject) weeksArr.get(z);
+					addition += (int) (weekObj.get(ADDITION));
+					deletion += (int) (weekObj.get(DELETION));
+				}
+				
+				JSONObject authorObj = (JSONObject) innerJsonObj.get(AUTHOR);
+				
+				// TODO : shawn uncomment this and replace the list Tab D
+				// list.add(new PieChart.Data((String) authorObj.get(LOGIN), addition - deletion));
+			}
+		}
+	}
+	
+	
 	public void updateTabB(){
 		committerCommits = new HashMap<String, HashMap<String, Integer>>();
 		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 		String formattedDate = startDate.getValue().format(formatter) + "T00:00:00Z";
 		String committerName = contributorChoice.getValue();
-		CommitParser commitParser = new CommitParser(githubRepoInput.getText(), committerName, formattedDate, "");
+		CommitParser commitParser = new CommitParser(mainParser.getUrl(), committerName, formattedDate, "");
 		checkError = commitParser.parseURL();
 		checkError();
 
