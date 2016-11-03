@@ -44,7 +44,8 @@ public class Parser {
 		    while (scan.hasNext())
 		        str += scan.nextLine();
 		    scan.close();
-		    if(this instanceof ContriParser || this instanceof CommitParser || this instanceof FileParser || this instanceof StatsParser){
+		    if(this instanceof ContriParser || this instanceof CommitParser || this instanceof FileParser 
+		       || this instanceof StatsParser){
 		    	jsonArr = (JSONArray) parser.parse(str);
 		    } else {
 		    	jsonObj = (JSONObject) parser.parse(str);

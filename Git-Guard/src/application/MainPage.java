@@ -1,10 +1,6 @@
 package application;
 	
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -73,6 +69,10 @@ public class MainPage extends AnchorPane {
 	private static final String NAME = "name";
 	private static final String ADDITION = "a";
 	private static final String DELETION = "d";
+	private static final String SHA = "sha";
+	private static final String FILES = "files";
+	private static final String FILENAME = "filename";
+	private static final String PATCH = "patch";
 	
 	TranslateTransition openPanel;
 	TranslateTransition closePanel;
@@ -434,8 +434,7 @@ public class MainPage extends AnchorPane {
 		if(checkError) {
 			// Update UI with parser's JSONArray
 			JSONArray jsonArr = commitParser.getJSONArr();
-			
-			//Use this to add data to directory listing
+
 			for(int i = 0 ; i< jsonArr.size(); i++){
 				JSONObject commitObj = (JSONObject) jsonArr.get(i);
 				commitObj = (JSONObject) commitObj.get(COMMIT);
@@ -444,6 +443,7 @@ public class MainPage extends AnchorPane {
 				String msg = (String) commitObj.get(MESSAGE);
 				String date = (String) committerObj.get(DATE);
 				String name = (String) committerObj.get(NAME);
+				String sha = (String) committerObj.get(SHA);
 				// Show MSG , date , committer 
 				// TODO : update UI with this 3 data
 			}
@@ -463,6 +463,42 @@ public class MainPage extends AnchorPane {
 		// TODO : print the content. They are in line
 		for(int i =0 ; i < content.size(); i++){
 			
+		}
+	}
+	
+	private void displayLinesHistory(String sha, String filePath, int from, int to){
+		// Commit SHA
+		FileCommitParser fileCommitParser = new FileCommitParser(mainParser.getOldUrl(), sha);
+		checkError = fileCommitParser.parseURL();
+		checkError();
+		
+		if(checkError) {
+			JSONObject jsonObj = fileCommitParser.getJSONObj();
+			JSONArray jsonFiles = (JSONArray) jsonObj.get(FILES);
+			for(int i = 0 ; i< jsonFiles.size(); i++){
+				JSONObject jsonFile = (JSONObject) jsonFiles.get(i);
+				String filename = (String) jsonFile.get(FILENAME);
+				if(filename.equals(filePath.substring(filePath.lastIndexOf("/") + 1))){
+					// Do something with the patch if it's the file
+					// @@ -0,0 +1,19 @@
+					String patch = (String) jsonFile.get(PATCH);
+					String [] patches = patch.split("@@");
+					String [] addDelete = patches[1].trim().split(" ");
+					int startAdd = Integer.parseInt(addDelete[1].split(",")[0].substring(1)); 
+					int startAddMax = startAdd + Integer.parseInt(addDelete[1].split(",")[1]) - 1;
+					
+					int startDel = Integer.parseInt(addDelete[0].split(",")[0].substring(1)); 
+					int startDelMax = startAdd + Integer.parseInt(addDelete[0].split(",")[1]) - 1;
+					
+					if(from <= startAdd && to >= startAdd){
+						// Filter out lines more than to
+					}
+					
+					if(from <= startDel && to >= startDel){
+						// Filter out lines more than to
+					}
+				}
+			}
 		}
 	}
 	
