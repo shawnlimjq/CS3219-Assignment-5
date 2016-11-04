@@ -42,6 +42,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -160,6 +161,8 @@ public class MainPage extends AnchorPane {
 	private ScatterChart<String, Number> contributorScatter;
 	@FXML
 	private ChoiceBox<String> contributorChoice;
+	@FXML
+	private ListView listViewFiles;
 	@FXML
 	private DatePicker startDate;
 	@FXML
@@ -285,6 +288,17 @@ public class MainPage extends AnchorPane {
         		// Condition ensures init ran only once
                 if (tabB.isSelected() && !loadB) {
                 	initTabB();
+                	loadB = true;
+                }
+            }
+        });
+		
+		tabC.setOnSelectionChanged(new EventHandler<Event>() {
+            @Override
+            public void handle(Event t) {
+        		// Condition ensures init ran only once
+                if (tabC.isSelected() && !loadB) {
+                	initTabC();
                 	loadB = true;
                 }
             }
@@ -488,6 +502,11 @@ public class MainPage extends AnchorPane {
 		}
 	}
 	
+	private void initTabC(){
+		// Tab C
+		updateFileChooser("");
+	}
+	
 	// Keep going in this method if file or directory clicked
 	private void updateFileChooser(String initPath){
 		FileParser fileParser = new FileParser(mainParser.getOldUrl(), initPath);
@@ -497,7 +516,7 @@ public class MainPage extends AnchorPane {
 		if(checkError) {
 			// Update UI with parser's JSONArray
 			JSONArray jsonArr = fileParser.getJSONArr();
-			
+			listViewFiles.getItems().clear();
 			//Use this to add data to directory listing
 			for(int i =0 ; i< jsonArr.size(); i++){
 				// Show first lvl objects
@@ -507,10 +526,11 @@ public class MainPage extends AnchorPane {
 				if(innerJsonObj.get("type").equals("file")){
 					// Show as file. Show commit when clicked
 					String fileName = path[path.length-1];
-					
+					listViewFiles.getItems().add(fileName);
 				} else if (innerJsonObj.get("type").equals("dir")){
 					// Show as directory
 					String dirName = path[path.length - 1];
+					listViewFiles.getItems().add(dirName);
 				}
 			}
 		}

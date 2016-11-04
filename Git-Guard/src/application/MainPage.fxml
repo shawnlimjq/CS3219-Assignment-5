@@ -9,6 +9,7 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -74,7 +75,10 @@
                <content>
                   <ScrollPane fx:id="tabCSP" prefHeight="200.0" prefWidth="200.0">
                     <content>
-                      <AnchorPane fx:id="tabCAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1035.0" />
+                      <AnchorPane fx:id="tabCAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1035.0">
+                           <children>
+                              <ListView fx:id="listViewFiles" layoutX="28.0" layoutY="25.0" prefHeight="524.0" prefWidth="200.0" />
+                           </children></AnchorPane>
                     </content>
                   </ScrollPane>
                </content>
