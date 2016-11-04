@@ -1,6 +1,9 @@
 package application;
 	
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -9,7 +12,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -339,13 +344,40 @@ public class MainPage extends AnchorPane {
     	contributorChart.getData().add(series);
 	}
 	
-	private void populateScatter(){
+	/*private void populateScatter(){
 		XYChart.Series<String, Integer> series = new XYChart.Series<>();
     	for (Map.Entry<String, HashMap<String, Integer>> committerEntry : committerCommits.entrySet()) {
     	    String committer = committerEntry.getKey();
     	    HashMap<String, Integer> dateCount = committerEntry.getValue();
     	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
     	    	String date = dateEntry.getKey();
+    	    	int count = dateEntry.getValue();
+    	    	series.getData().add(new XYChart.Data<>(date, count));
+    	    }
+    	}
+    	contributorScatter.getData().add(series);
+	}*/
+	
+	private void populateScatter(){
+		Map<Date, Integer> m = new HashMap<Date, Integer>();
+		Map<Date, Integer> m1 = new TreeMap();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		XYChart.Series<String, Integer> series = new XYChart.Series<>();
+    	for (Map.Entry<String, HashMap<String, Integer>> committerEntry : committerCommits.entrySet()) {
+    	    String committer = committerEntry.getKey();
+    	    HashMap<String, Integer> dateCount = committerEntry.getValue();
+    	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
+    	    	try {
+					m.put(new java.sql.Date(dateFormat.parse(dateEntry.getKey()).getTime()), dateEntry.getValue());
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    	    }
+    	    m1 = new TreeMap(m);
+    	    for(Entry<Date, Integer> dateEntry : m1.entrySet()){
+    	    	String date = dateEntry.getKey().toString();
+    	    	System.out.println(date);
     	    	int count = dateEntry.getValue();
     	    	series.getData().add(new XYChart.Data<>(date, count));
     	    }
