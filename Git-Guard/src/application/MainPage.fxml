@@ -57,7 +57,7 @@
                                   <NumberAxis side="LEFT" />
                                 </yAxis>
                               </BarChart>
-                              <ScatterChart fx:id="contributorScatter" animated="false" layoutX="289.0" layoutY="116.0">
+                              <ScatterChart fx:id="contributorScatter" animated="false" layoutX="29.0" layoutY="104.0" prefHeight="400.0" prefWidth="978.0">
                                 <xAxis>
                                   <CategoryAxis side="BOTTOM" />
                                 </xAxis>

@@ -388,29 +388,50 @@ public class MainPage extends AnchorPane {
 				myDate = addDay(myDate);
 			}
 			
-			dateXAxisList.add(myDate.toString());
+			dateXAxisList.add(format.format(myDate));
 			
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
-		CategoryAxis dateXAxis = new CategoryAxis(dateXAxisList);
+		//CategoryAxis dateXAxis = new CategoryAxis(dateXAxisList);
 		
-		contributorScatter =  new ScatterChart<String,Number>(dateXAxis, new NumberAxis());
+		//contributorScatter =  new ScatterChart<String,Number>(dateXAxis, new NumberAxis());
 		
 		Series<String, Number> series = new XYChart.Series<>();
     	for (Map.Entry<String, HashMap<String, Integer>> committerEntry : committerCommits.entrySet()) {
     	    String committer = committerEntry.getKey();
     	    HashMap<String, Integer> dateCount = committerEntry.getValue();
-    	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
+    	    
+    	    /*for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
     	    	try {
 					m.put(new java.sql.Date(format.parse(dateEntry.getKey()).getTime()), dateEntry.getValue());
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-    	    }
+    	    }*/
+			for (int i = 0; i < dateXAxisList.size(); i++) {
+				if (dateCount.containsKey(dateXAxisList.get(i))) {
+					try {
+						m.put(new java.sql.Date(format.parse(dateXAxisList.get(i)).getTime()),
+								dateCount.get(dateXAxisList.get(i)));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else {
+					try {
+						m.put(new java.sql.Date(format.parse(dateXAxisList.get(i)).getTime()), 0);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+    	    
+    	    
     	    m1 = new TreeMap(m);
     	    for(Entry<Date, Integer> dateEntry : m1.entrySet()){
     	    	String date = dateEntry.getKey().toString();
