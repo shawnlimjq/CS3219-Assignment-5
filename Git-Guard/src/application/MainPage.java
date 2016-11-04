@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,9 +31,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DateCell;
@@ -153,7 +157,7 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private BarChart<String, Integer> contributorChart;
 	@FXML
-	private ScatterChart<String, Integer> contributorScatter;
+	private ScatterChart<String, Number> contributorScatter;
 	@FXML
 	private ChoiceBox<String> contributorChoice;
 	@FXML
@@ -304,7 +308,7 @@ public class MainPage extends AnchorPane {
                 // Update UI here
             	updateTabB();
             	// Use hashmap to populate histo
-            	populateHisto();
+            	// populateHisto();
             	populateScatter();
             }
         });
@@ -358,17 +362,50 @@ public class MainPage extends AnchorPane {
     	contributorScatter.getData().add(series);
 	}*/
 	
+	private Date addDay(Date date){
+	    Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, 1);
+        return cal.getTime();
+	}
+	
 	private void populateScatter(){
+		
 		Map<Date, Integer> m = new HashMap<Date, Integer>();
 		Map<Date, Integer> m1 = new TreeMap();
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		XYChart.Series<String, Integer> series = new XYChart.Series<>();
+		ObservableList<String> dateXAxisList = FXCollections.observableList(new ArrayList<String>());
+		
+		String sourceDate = startDate.getValue().toString();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Date myDate;
+		try {
+			
+			myDate = format.parse(sourceDate);
+			Date currDate = new Date();
+			
+			while(!format.format(myDate).equals(format.format(currDate))){
+				dateXAxisList.add(format.format(myDate));
+				myDate = addDay(myDate);
+			}
+			
+			dateXAxisList.add(myDate.toString());
+			
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		CategoryAxis dateXAxis = new CategoryAxis(dateXAxisList);
+		
+		contributorScatter =  new ScatterChart<String,Number>(dateXAxis, new NumberAxis());
+		
+		Series<String, Number> series = new XYChart.Series<>();
     	for (Map.Entry<String, HashMap<String, Integer>> committerEntry : committerCommits.entrySet()) {
     	    String committer = committerEntry.getKey();
     	    HashMap<String, Integer> dateCount = committerEntry.getValue();
     	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
     	    	try {
-					m.put(new java.sql.Date(dateFormat.parse(dateEntry.getKey()).getTime()), dateEntry.getValue());
+					m.put(new java.sql.Date(format.parse(dateEntry.getKey()).getTime()), dateEntry.getValue());
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -378,7 +415,8 @@ public class MainPage extends AnchorPane {
     	    for(Entry<Date, Integer> dateEntry : m1.entrySet()){
     	    	String date = dateEntry.getKey().toString();
     	    	System.out.println(date);
-    	    	int count = dateEntry.getValue();
+    	    	Number count = dateEntry.getValue();
+    	    	System.out.println(count);
     	    	series.getData().add(new XYChart.Data<>(date, count));
     	    }
     	}
@@ -538,7 +576,7 @@ public class MainPage extends AnchorPane {
 									break;
 								}
 								
-								if(lines[z].charAt(0) != '-'){
+								if(lines[z].charAt(0) != '-' && startAdd + z - 1 >= from){
 									// Populate right list view
 								}
 							}
@@ -552,7 +590,7 @@ public class MainPage extends AnchorPane {
 									break;
 								}
 								
-								if(lines[z].charAt(0) != '+'){
+								if(lines[z].charAt(0) != '+'  && startDel + z - 1 >= from){
 									// Populate left list view
 								}
 							}
