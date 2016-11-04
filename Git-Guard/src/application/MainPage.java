@@ -533,6 +533,13 @@ public class MainPage extends AnchorPane {
 					listViewFiles.getItems().add(dirName);
 				}
 			}
+			listViewFiles.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+		        @Override
+		        public void handle(MouseEvent event) {
+		        	updateFileChooser(listViewFiles.getSelectionModel().getSelectedItem().toString());
+		        }
+		    });
 		}
 	}
 	
