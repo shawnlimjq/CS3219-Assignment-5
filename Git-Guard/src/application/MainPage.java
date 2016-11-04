@@ -83,7 +83,7 @@ public class MainPage extends AnchorPane {
 	
 	// Can store at a storage
 	private HashMap<String, HashMap<String, Integer>> committerCommits;
-	private HashMap<String, HashSet<String>> directoryListing;
+	private ArrayList<String> commitSHAS;
 	
 	private Parser mainParser;
 	private Data data;
@@ -427,6 +427,7 @@ public class MainPage extends AnchorPane {
 	
 	// Call this after a file is clicked
 	private void displayCommits(String filePath){
+		commitSHAS = new ArrayList<String>();
 		CommitParser commitParser = new CommitParser(mainParser.getOldUrl(), "", "", filePath);
 		checkError = commitParser.parseURL();
 		checkError();
@@ -444,6 +445,7 @@ public class MainPage extends AnchorPane {
 				String date = (String) committerObj.get(DATE);
 				String name = (String) committerObj.get(NAME);
 				String sha = (String) committerObj.get(SHA);
+				commitSHAS.add(sha);
 				// Show MSG , date , committer 
 				// TODO : update UI with this 3 data
 			}
@@ -466,36 +468,63 @@ public class MainPage extends AnchorPane {
 		}
 	}
 	
-	private void displayLinesHistory(String sha, String filePath, int from, int to){
-		// Commit SHA
-		FileCommitParser fileCommitParser = new FileCommitParser(mainParser.getOldUrl(), sha);
-		checkError = fileCommitParser.parseURL();
-		checkError();
-		
-		if(checkError) {
-			JSONObject jsonObj = fileCommitParser.getJSONObj();
-			JSONArray jsonFiles = (JSONArray) jsonObj.get(FILES);
-			for(int i = 0 ; i< jsonFiles.size(); i++){
-				JSONObject jsonFile = (JSONObject) jsonFiles.get(i);
-				String filename = (String) jsonFile.get(FILENAME);
-				if(filename.equals(filePath.substring(filePath.lastIndexOf("/") + 1))){
-					// Do something with the patch if it's the file
-					// @@ -0,0 +1,19 @@
-					String patch = (String) jsonFile.get(PATCH);
-					String [] patches = patch.split("@@");
-					String [] addDelete = patches[1].trim().split(" ");
-					int startAdd = Integer.parseInt(addDelete[1].split(",")[0].substring(1)); 
-					int startAddMax = startAdd + Integer.parseInt(addDelete[1].split(",")[1]) - 1;
-					
-					int startDel = Integer.parseInt(addDelete[0].split(",")[0].substring(1)); 
-					int startDelMax = startAdd + Integer.parseInt(addDelete[0].split(",")[1]) - 1;
-					
-					if(from <= startAdd && to >= startAdd){
-						// Filter out lines more than to
-					}
-					
-					if(from <= startDel && to >= startDel){
-						// Filter out lines more than to
+	private void displayLinesHistory(String filePath, int from, int to) {
+		// 0 is the latest commit
+		for(int shaIndex =0 ; shaIndex < commitSHAS.size(); shaIndex++){
+			// Commit SHA
+			FileCommitParser fileCommitParser = new FileCommitParser(mainParser.getOldUrl(), commitSHAS.get(shaIndex));
+			checkError = fileCommitParser.parseURL();
+			checkError();
+			
+			if(checkError) {
+				JSONObject jsonObj = fileCommitParser.getJSONObj();
+				JSONArray jsonFiles = (JSONArray) jsonObj.get(FILES);
+				for(int i = 0 ; i< jsonFiles.size(); i++){
+					JSONObject jsonFile = (JSONObject) jsonFiles.get(i);
+					String filename = (String) jsonFile.get(FILENAME);
+					// TODO: Add Exception handling
+					if(filename.equals(filePath.substring(filePath.lastIndexOf("/") + 1))){
+						// Do something with the patch if it's the file
+						// @@ -0,0 +1,19 @@
+						String patch = (String) jsonFile.get(PATCH);
+						String [] patches = patch.split("@@");
+						String [] addDelete = patches[1].trim().split(" ");
+						int startAdd = Integer.parseInt(addDelete[1].split(",")[0].substring(1)); 
+						int startAddMax = startAdd + Integer.parseInt(addDelete[1].split(",")[1]) - 1;
+						
+						int startDel = Integer.parseInt(addDelete[0].split(",")[0].substring(1)); 
+					    int startDelMax = startAdd + Integer.parseInt(addDelete[0].split(",")[1]) - 1;
+						
+						String [] lines = patch.split("\n");
+						String header = lines[0];
+						
+						if(from <= startAddMax){
+							for (int z = 1 ; z < lines.length ; z++){
+								
+								// Filter out lines more than to
+								if(startAdd + z - 1 > to) {
+									break;
+								}
+								
+								if(lines[z].charAt(0) != '-'){
+									// Populate right list view
+								}
+							}
+						}
+						
+						if(from <= startDelMax){
+							for (int z = 1 ; z < lines.length ; z++){
+	
+								// Filter out lines more than to
+								if(startDel + z - 1 > to){
+									break;
+								}
+								
+								if(lines[z].charAt(0) != '+'){
+									// Populate left list view
+								}
+							}
+						}
 					}
 				}
 			}
