@@ -172,7 +172,7 @@ public class MainPage extends AnchorPane {
 	
 	private static MainPage instance = null;
 	
-	private String pieColors[];
+	//private String pieColors[];
 
 	private MainPage() throws IOException {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MAIN_PAGE_FXML_URL));
@@ -297,9 +297,9 @@ public class MainPage extends AnchorPane {
             @Override
             public void handle(Event t) {
         		// Condition ensures init ran only once
-                if (tabC.isSelected() && !loadB) {
+                if (tabC.isSelected() && !loadC) {
                 	initTabC();
-                	loadB = true;
+                	loadC = true;
                 }
             }
         });
@@ -518,6 +518,9 @@ public class MainPage extends AnchorPane {
 			JSONArray jsonArr = fileParser.getJSONArr();
 			listViewFiles.getItems().clear();
 			//Use this to add data to directory listing
+			if(initPath!=""){
+				listViewFiles.getItems().add("Back");
+			}
 			for(int i =0 ; i< jsonArr.size(); i++){
 				// Show first lvl objects
 				// TODO
@@ -537,7 +540,16 @@ public class MainPage extends AnchorPane {
 
 		        @Override
 		        public void handle(MouseEvent event) {
-		        	updateFileChooser(listViewFiles.getSelectionModel().getSelectedItem().toString());
+		        	if(listViewFiles.getSelectionModel().getSelectedItem().toString()!="Back"){
+		        		updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+		        	}else{
+		        		int index=initPath.lastIndexOf('/');
+		        		if(index!=-1){
+		        			updateFileChooser(initPath.substring(0,index));
+		        		}else{
+		        			updateFileChooser("");
+		        		}
+		        	}
 		        }
 		    });
 		}
