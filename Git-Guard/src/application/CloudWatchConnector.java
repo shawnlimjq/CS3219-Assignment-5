@@ -21,7 +21,7 @@ public class CloudWatchConnector {
 	private AmazonCloudWatchEventsClient client;
 	
 	private static final String lambdaName = "Hello";
-	private static final String lambdaARN = null;
+	private static final String lambdaARN = "arn:aws:lambda:ap-southeast-1:181848607663:function:Hello";
 	
 	
 	public CloudWatchConnector(){
@@ -66,14 +66,16 @@ public class CloudWatchConnector {
 	
 	//parse interval to schedule expression
 	private String parseExpression(String interval){
-		return null;
+		/*
+		 * TO BE COMPLETED
+		 */
 	}
 	
 	//Repo = rule name of event rule
 	//Interval = schedule expression
 	//Input = json input
 	public void addScheduledEvent(String repo, String interval, String input){
-		//String scheduleExpression = parseExpression(interval);
+		String scheduleExpression = parseExpression(interval);
 		createScheduleRule(repo, scheduleExpression);
 		addTargetToRule(lambdaName, lambdaARN, repo, input);
 	}
