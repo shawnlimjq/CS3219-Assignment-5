@@ -57,6 +57,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import javafx.util.Pair;
 
 
 public class MainPage extends AnchorPane {
@@ -70,7 +71,6 @@ public class MainPage extends AnchorPane {
 	private static final String LOGIN = "login";
 	private static final String CREATED_AT = "created_at";
 	private static final String COMMIT = "commit";
-	private static final String COMMITTER = "committer";
 	private static final String AUTHOR = "author";
 	private static final String DATE = "date";
 	private static final String WEEKS = "weeks";
@@ -88,7 +88,7 @@ public class MainPage extends AnchorPane {
 	TranslateTransition closePanel;
 	private static final int TRANSITION_TIME = 350;
 	private static final int STARTPOSITION = 0;
-	private boolean checkError;
+	private boolean noError;
 	private JSONObject jsonObj;
 	
 	// Can store at a storage
@@ -194,7 +194,7 @@ public class MainPage extends AnchorPane {
 	}
 
 	private void checkError(){
-		if (checkError==false){
+		if (noError==false){
 			errorLabel.setVisible(true);
 		} else{
 			errorLabel.setVisible(false);
@@ -248,11 +248,11 @@ public class MainPage extends AnchorPane {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
 					// Testing link - https://github.com/ymymym/MaterialDateTimePicker
 					mainParser = new Parser(githubRepoInput.getText());
-					checkError = mainParser.parseURL();
+					noError = mainParser.parseURL();
 					checkError();
 					data.checkIn(mainParser.getOldUrl(), new Date());
 				
-					if(checkError==true){
+					if(noError==true){
 						loadA = false;
 						loadB = false;
 
@@ -462,10 +462,10 @@ public class MainPage extends AnchorPane {
 	private void initTabA(){
 		// Tab A
 		ContriParser contriParser = new ContriParser(githubRepoInput.getText());
-		checkError = contriParser.parseURL();
+		noError = contriParser.parseURL();
 		checkError();
 		
-		if(checkError){
+		if(noError){
 			// Update UI with parser's JSONArray
 			JSONArray jsonArr = contriParser.getJSONArr();
 			list.clear();
@@ -491,7 +491,7 @@ public class MainPage extends AnchorPane {
 	
 	private void initTabB(){
 		// Tab B
-		if(checkError){
+		if(noError){
 			JSONObject sourceObj = (JSONObject) jsonObj.get(SOURCE);
 			if(sourceObj!=null){
 				disableDate((String) sourceObj.get(CREATED_AT));
@@ -510,10 +510,10 @@ public class MainPage extends AnchorPane {
 	// Keep going in this method if file or directory clicked
 	private void updateFileChooser(String initPath){
 		FileParser fileParser = new FileParser(mainParser.getOldUrl(), initPath);
-		checkError = fileParser.parseURL();
+		noError = fileParser.parseURL();
 		checkError();
 		
-		if(checkError) {
+		if(noError) {
 			// Update UI with parser's JSONArray
 			JSONArray jsonArr = fileParser.getJSONArr();
 			listViewFiles.getItems().clear();
@@ -540,17 +540,17 @@ public class MainPage extends AnchorPane {
 	private void displayCommits(String filePath){
 		commitSHAS = new ArrayList<String>();
 		CommitParser commitParser = new CommitParser(mainParser.getOldUrl(), "", "", filePath);
-		checkError = commitParser.parseURL();
+		noError = commitParser.parseURL();
 		checkError();
 		
-		if(checkError) {
+		if(noError) {
 			// Update UI with parser's JSONArray
 			JSONArray jsonArr = commitParser.getJSONArr();
 
 			for(int i = 0 ; i< jsonArr.size(); i++){
 				JSONObject commitObj = (JSONObject) jsonArr.get(i);
 				commitObj = (JSONObject) commitObj.get(COMMIT);
-				JSONObject committerObj = (JSONObject) commitObj.get(COMMITTER);
+				JSONObject committerObj = (JSONObject) commitObj.get(AUTHOR);
 				
 				String msg = (String) commitObj.get(MESSAGE);
 				String date = (String) committerObj.get(DATE);
@@ -584,10 +584,10 @@ public class MainPage extends AnchorPane {
 		for(int shaIndex =0 ; shaIndex < commitSHAS.size(); shaIndex++){
 			// Commit SHA
 			FileCommitParser fileCommitParser = new FileCommitParser(mainParser.getOldUrl(), commitSHAS.get(shaIndex));
-			checkError = fileCommitParser.parseURL();
+			noError = fileCommitParser.parseURL();
 			checkError();
 			
-			if(checkError) {
+			if(noError) {
 				JSONObject jsonObj = fileCommitParser.getJSONObj();
 				JSONArray jsonFiles = (JSONArray) jsonObj.get(FILES);
 				for(int i = 0 ; i< jsonFiles.size(); i++){
@@ -644,42 +644,99 @@ public class MainPage extends AnchorPane {
 	
 	private void updateTabD(){
 		// Tab D
-		StatsParser statsParser = new StatsParser(mainParser.getOldUrl());
-		checkError = statsParser.parseURL();
+		CommitParser commitParser = new CommitParser(mainParser.getOldUrl(), "", "", "");
+		noError = commitParser.parseURL();
 		checkError();
-		
-		if(checkError){
-			// Update UI with parser's JSONArray
-			JSONArray jsonArr = statsParser.getJSONArr();
-			// TODO : update accordingly
-			dList.clear();
-			piechartLine.setData(dList);
-			
-			//Use this to add data to piechart. FOR each author
-			for(int i =0 ; i< jsonArr.size(); i++){
-	
-				JSONObject innerJsonObj = (JSONObject) jsonArr.get(i);
-				JSONArray weeksArr = (JSONArray) innerJsonObj.get(WEEKS);
-				long addition = 0;
-				long deletion = 0;
-				for(int z = 0 ; z < weeksArr.size(); z++){
-					JSONObject weekObj = (JSONObject) weeksArr.get(z);
-					addition += (long) (weekObj.get(ADDITION));
-					deletion += (long) (weekObj.get(DELETION));
+		if(noError) {
+			// Contributor is key, value is number of lines for the committer
+			HashMap<String, Integer> contributorHm = new HashMap<String, Integer>();
+			// File path is key, value is line, author
+			HashMap<String, HashMap<String,String>> fileHm = new HashMap<String, HashMap<String,String>>(); 
+
+			ArrayList<String> SHAs = new ArrayList<String>();
+			ArrayList<String> contributors = new ArrayList<String>();
+			// Do something with the jsonArr, commit per day maybe. jsonArr.get(0) stands for the latest commit
+			String tempSHA = "";
+			int z = 0;
+			JSONArray jsonArr = commitParser.getJSONArr();
+			System.out.println(jsonArr.size());
+			do {
+				
+				jsonArr = commitParser.getJSONArr();
+				
+				for(int i = z ; i < jsonArr.size(); i++) {
+					// Consider more than 30 commits
+					JSONObject commitObj = (JSONObject) jsonArr.get(i);
+					tempSHA = (String) commitObj.get(SHA);
+					JSONObject authorObj = (JSONObject) ((JSONObject) commitObj.get(COMMIT)).get(AUTHOR);
+					contributors.add((String) authorObj.get(NAME));
+					SHAs.add(tempSHA);
 				}
 				
-				JSONObject authorObj = (JSONObject) innerJsonObj.get(AUTHOR);
+				if(jsonArr.size() == 30){
+					commitParser.setSHA(tempSHA);
+					noError = commitParser.parseURL();
+					checkError();
+					z = 1;
+				}
+			} while(jsonArr.size() == 30 && noError);
+			
+			for(int i = SHAs.size()-1 ; i > -1; i--){
 				
-				// TODO : shawn uncomment this and replace the list Tab D
-				dList.add(new PieChart.Data((String) authorObj.get(LOGIN), addition - deletion));
+				FileCommitParser fileCommitParser = new FileCommitParser(mainParser.getOldUrl(), SHAs.get(i));
+				noError = fileCommitParser.parseURL();
+				checkError();
+				if(noError){
+					
+					JSONObject jsonFileObj = fileCommitParser.getJSONObj();
+					JSONArray files = (JSONArray) jsonFileObj.get(FILES);
+					
+					for(int j = 0 ; j < files.size(); j++){
+						
+						JSONObject file = (JSONObject) files.get(j);
+						String line = (String) file.get(PATCH);
+						String filename = (String) file.get(FILENAME);
+						String [] lines = line.split("\n");
+						
+						for(int k = 0 ; k < lines.length; k++){
+							System.out.println(lines[k]);
+							if(lines[k].charAt(0) == '-'){
+								
+								HashMap<String, String> temp = fileHm.get(filename);
+								lines[k] = "+" + lines[k].substring(1);
+								temp.remove(lines[k]);
+								
+								// This condition should run everytime
+								if(contributorHm.containsKey(contributors.get(i))){
+									 int count = contributorHm.get(contributors.get(i)) - 1;
+									 contributorHm.put(contributors.get(i), count);
+								}
+								
+							} else if (lines[k].charAt(0) == '+'){
+								
+								HashMap<String, String> temp = fileHm.get(filename);
+								temp.put(lines[k], contributors.get(i));
+								fileHm.put(filename, temp);
+								int count = 1;
+								if(contributorHm.containsKey(contributors.get(i))){
+									 count = contributorHm.get(contributors.get(i)) + 1;
+								}
+								
+								contributorHm.put(contributors.get(i), count);
+							}
+						}
+					}
+				}
 			}
-			dList.forEach(data ->
-            data.nameProperty().bind(
-                    Bindings.concat(
-                            data.getName(), "-", data.pieValueProperty(), " Lines"
-                    )
-            )
-    );
+			
+			for (Map.Entry<String, Integer> entry : contributorHm.entrySet()) {
+			    String key = entry.getKey();
+			    int value = entry.getValue();
+			    dList.add(new PieChart.Data(key, value));
+			}
+			
+			dList.forEach(data -> data.nameProperty().bind(Bindings.concat(data.getName(), "-", data.pieValueProperty(), " Lines")));
+			
 		}
 	}
 	
@@ -690,54 +747,51 @@ public class MainPage extends AnchorPane {
 		String formattedDate = startDate.getValue().format(formatter) + "T00:00:00Z";
 		String committerName = contributorChoice.getValue();
 		CommitParser commitParser = new CommitParser(mainParser.getOldUrl(), committerName, formattedDate, "");
-		checkError = commitParser.parseURL();
+		noError = commitParser.parseURL();
 		checkError();
-
-		JSONArray jsonArr = commitParser.getJSONArr();
 		
-		// Date is key, Value is number of commits for the committer
-		HashMap<String, Integer> hm = new HashMap<String, Integer>();
-		// Do something with the jsonArr, commit per day maybe. jsonArr.get(0) stands for the latest commit
-		for(int i= 0 ; i < jsonArr.size(); i++) {
-			// Commit syntax EG 
-			/*
-			"commit": {
-		      "committer": {
-		        "name": "Wouter Dullaert",
-		        "email": "wouter.dullaert@gmail.com",
-		        "date": "2016-03-17T20:21:14Z"
-		      },
-		      "committer": {
-		        "name": "Wouter Dullaert",
-		        "email": "wouter.dullaert@gmail.com",
-		        "date": "2016-03-17T20:21:14Z"
-		      },
-		      "message": "Increased version number to v2.3.0",
-		      "tree": {
-		        "sha": "166d33193dabe1f9d61062bbb5329092b82e026f",
-		        "url": "https://api.github.com/repos/ymymym/MaterialDateTimePicker/git/trees/166d33193dabe1f9d61062bbb5329092b82e026f"
-		      },
-		      "url": "https://api.github.com/repos/ymymym/MaterialDateTimePicker/git/commits/d857cf3110f4796980da1e11a1887c0aa6e652b8",
-		      "comment_count": 0
-		    }
-		    */
-			JSONObject commitObj = (JSONObject) jsonArr.get(i);
-			commitObj = (JSONObject) commitObj.get(COMMIT);
-			JSONObject committerObj = (JSONObject) commitObj.get(COMMITTER);
-			String date = (String) committerObj.get(DATE);
-		
-			date = date.substring(0, date.indexOf("T"));
+		if(noError){
+			// Date is key, Value is number of commits for the committer
+			HashMap<String, Integer> hm = new HashMap<String, Integer>();
+			// Do something with the jsonArr, commit per day maybe. jsonArr.get(0) stands for the latest commit
+			String tempSHA = "";
+			int z = 0;
+			JSONArray jsonArr = commitParser.getJSONArr();
 			
-			int noOfCommits = 0;
-			if(hm.get(date) != null){
-				noOfCommits = hm.get(date);
-			}
+			do {
+				
+				jsonArr = commitParser.getJSONArr();
+				
+				for(int i = z ; i < jsonArr.size(); i++) {
+					
+					// Consider more than 250 commits
+					JSONObject commitObj = (JSONObject) jsonArr.get(i);
+					tempSHA = (String) commitObj.get(SHA);
+					commitObj = (JSONObject) commitObj.get(COMMIT);
+					JSONObject committerObj = (JSONObject) commitObj.get(AUTHOR);
+					String date = (String) committerObj.get(DATE);
+				
+					date = date.substring(0, date.indexOf("T"));
+					
+					int noOfCommits = 0;
+					if(hm.get(date) != null){
+						noOfCommits = hm.get(date);
+					}
+					
+					noOfCommits += 1;
+					hm.put(date, noOfCommits);
+				}
+				
+				if(jsonArr.size() == 30){
+					commitParser.setSHA(tempSHA);
+					noError = commitParser.parseURL();
+					checkError();
+					z = 1;
+				}
+			} while(jsonArr.size() == 30 && noError);
 			
-			noOfCommits += 1;
-			hm.put(date, noOfCommits);
+			committerCommits.put(committerName, hm);
 		}
-		
-		committerCommits.put(committerName, hm);
 	}
 	
 	// To disable date before creation
