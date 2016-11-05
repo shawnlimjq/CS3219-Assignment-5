@@ -78,6 +78,51 @@
                       <AnchorPane fx:id="tabCAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1035.0">
                            <children>
                               <ListView fx:id="listViewFiles" layoutX="28.0" layoutY="25.0" prefHeight="524.0" prefWidth="200.0" />
+                              <TabPane fx:id="tabCTabPane" layoutX="228.0" layoutY="25.0" prefHeight="538.0" prefWidth="806.0" tabClosingPolicy="UNAVAILABLE">
+                                <tabs>
+                                  <Tab fx:id="tabCTabA" text="Commit History For File">
+                                    <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <BarChart fx:id="fileCommitHistory" layoutX="21.0" layoutY="13.0" prefHeight="489.0" prefWidth="774.0">
+                                                  <xAxis>
+                                                    <CategoryAxis side="BOTTOM" />
+                                                  </xAxis>
+                                                  <yAxis>
+                                                    <NumberAxis side="LEFT" />
+                                                  </yAxis>
+                                                </BarChart>
+                                             </children>
+                                          </AnchorPane>
+                                    </content>
+                                  </Tab>
+                                  <Tab fx:id="tabCTabB" text="Select Lines">
+                                    <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <ListView fx:id="listViewLines" layoutX="8.0" layoutY="7.0" prefHeight="501.0" prefWidth="796.0" />
+                                             </children>
+                                          </AnchorPane>
+                                    </content>
+                                  </Tab>
+                                    <Tab fx:id="tabCTabC" text="Commit History For Selected Line">
+                                      <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <BarChart fx:id="lineCommitHistory" layoutX="7.0" prefHeight="509.0" prefWidth="801.0">
+                                                  <xAxis>
+                                                    <CategoryAxis side="BOTTOM" />
+                                                  </xAxis>
+                                                  <yAxis>
+                                                    <NumberAxis side="LEFT" />
+                                                  </yAxis>
+                                                </BarChart>
+                                             </children>
+                                          </AnchorPane>
+                                      </content>
+                                    </Tab>
+                                </tabs>
+                              </TabPane>
                            </children></AnchorPane>
                     </content>
                   </ScrollPane>
@@ -116,8 +161,10 @@
                   <Font name="System Bold" size="15.0" />
                </font>
             </Label>
-            <TextField fx:id="notificationDays" layoutX="18.0" layoutY="156.0" prefHeight="25.0" prefWidth="240.0" promptText="Days: " />
-            <TextField fx:id="notificationHours" layoutX="18.0" layoutY="203.0" prefHeight="25.0" prefWidth="240.0" promptText="Hours: " />
+            <ChoiceBox fx:id="notificationHours" layoutX="94.0" layoutY="157.0" prefHeight="25.0" prefWidth="166.0" />
+            <ChoiceBox fx:id="notificationMinutes" layoutX="94.0" layoutY="201.0" prefHeight="25.0" prefWidth="166.0" />
+            <Label layoutX="32.0" layoutY="161.0" text="Hours: " />
+            <Label layoutX="27.0" layoutY="205.0" text="Minutes: " />
          </children>
       </AnchorPane>
    </children>

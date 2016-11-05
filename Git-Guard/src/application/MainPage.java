@@ -44,6 +44,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -112,19 +113,27 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private TextField githubRepoInput;
 	@FXML
-	private TextField notificationHours;
+	private ChoiceBox notificationHours;
 	@FXML
-	private TextField notificationDays;
+	private ChoiceBox notificationMinutes;
 	@FXML
 	private TextArea notifyEmail;
 	@FXML
 	private TabPane mainTabPane;
+	@FXML
+	private TabPane tabCTabPane;
 	@FXML
 	private Tab tabA;
 	@FXML
 	private Tab tabB;
 	@FXML
 	private Tab tabC;
+	@FXML
+	private Tab tabCTabA;
+	@FXML
+	private Tab tabCTabB;
+	@FXML
+	private Tab tabCTabC;
 	@FXML
 	private Tab tabD;
 	@FXML
@@ -158,11 +167,17 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private BarChart<String, Integer> contributorChart;
 	@FXML
+	private BarChart<String, Integer> fileCommitHistory;
+	@FXML
+	private BarChart<String, Integer> lineCommitHistory;
+	@FXML
 	private ScatterChart<String, Number> contributorScatter;
 	@FXML
 	private ChoiceBox<String> contributorChoice;
 	@FXML
 	private ListView listViewFiles;
+	@FXML
+	private ListView listViewLines;
 	@FXML
 	private DatePicker startDate;
 	@FXML
@@ -171,8 +186,12 @@ public class MainPage extends AnchorPane {
 	private Button addNoti;
 	
 	private static MainPage instance = null;
+	private int lineFrom;
+	private int lineTo;
 	
-	private String pieColors[];
+	public String transferURL="";
+	
+	//private String pieColors[];
 
 	private MainPage() throws IOException {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MAIN_PAGE_FXML_URL));
@@ -239,8 +258,36 @@ public class MainPage extends AnchorPane {
 		//initialisePieColors();
 		initializeHiddenPanel();
 		contributorChart.setAnimated(false);
+		listViewLines.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		for(int i=0;i<24;i++){
+			notificationHours.getItems().add(i);
+		}
+		for(int i=0;i<60;i++){
+			notificationMinutes.getItems().add(i);
+		}
+		listViewLines.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+            public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ENTER)) {
+					ObservableList<Integer> selectedItems = listViewLines.getSelectionModel().getSelectedIndices();
+					lineFrom = 999999999;
+					lineTo = -1;
+					for (int i : selectedItems) {
+						if(i<=lineFrom){
+							lineFrom=i;
+						}
+						if(i>=lineTo){
+							lineTo=i;
+						}
+					}
+					displayLinesHistory(transferURL,lineFrom+1,lineTo+1);
+				}
+			}
+        });
+		
 		Platform.runLater( () -> this.requestFocus() );
 		data = new Data();
+		
 		
 		githubRepoInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
@@ -251,8 +298,11 @@ public class MainPage extends AnchorPane {
 					noError = mainParser.parseURL();
 					checkError();
 					data.checkIn(mainParser.getOldUrl(), new Date());
-				
+
+					data.save();
+					
 					if(noError==true){
+						
 						loadA = false;
 						loadB = false;
 
@@ -297,9 +347,9 @@ public class MainPage extends AnchorPane {
             @Override
             public void handle(Event t) {
         		// Condition ensures init ran only once
-                if (tabC.isSelected() && !loadB) {
+                if (tabC.isSelected() && !loadC) {
                 	initTabC();
-                	loadB = true;
+                	loadC = true;
                 }
             }
         });
@@ -518,6 +568,9 @@ public class MainPage extends AnchorPane {
 			JSONArray jsonArr = fileParser.getJSONArr();
 			listViewFiles.getItems().clear();
 			//Use this to add data to directory listing
+			if(initPath!=""){
+				listViewFiles.getItems().add("Back");
+			}
 			for(int i =0 ; i< jsonArr.size(); i++){
 				// Show first lvl objects
 				// TODO
@@ -533,6 +586,39 @@ public class MainPage extends AnchorPane {
 					listViewFiles.getItems().add(dirName);
 				}
 			}
+			listViewFiles.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+		        @Override
+		        public void handle(MouseEvent event) {
+		        	if(listViewFiles.getItems().get(0)!="Back"){
+		        		JSONObject innerJsonObj = (JSONObject) jsonArr.get(listViewFiles.getSelectionModel().getSelectedIndex());
+		        		if(innerJsonObj.get("type").equals("file")){
+							displayCommits(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+						} else{
+							updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+						}
+		        	}else{
+		        	
+		        	if(listViewFiles.getSelectionModel().getSelectedItem().toString()!="Back"){
+		        		JSONObject innerJsonObj = (JSONObject) jsonArr.get(listViewFiles.getSelectionModel().getSelectedIndex()-1);
+		        		if(innerJsonObj.get("type").equals("file")){
+		        			transferURL = initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString();
+							displayCommits(transferURL);
+							displayContent(transferURL);
+						} else{
+							updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+						}
+		        	}else{
+		        		int index=initPath.lastIndexOf('/');
+		        		if(index!=0){
+		        			updateFileChooser(initPath.substring(0,index));
+		        		}else{
+		        			updateFileChooser("");
+		        		}
+		        	}
+		        	}
+		        }
+		    });
 		}
 	}
 	
@@ -542,6 +628,9 @@ public class MainPage extends AnchorPane {
 		CommitParser commitParser = new CommitParser(mainParser.getOldUrl(), "", "", filePath);
 		noError = commitParser.parseURL();
 		checkError();
+		XYChart.Series<String, Integer> series = new XYChart.Series<>();
+		HashMap<String, Integer> commitCount = new HashMap<String, Integer>();
+		fileCommitHistory.getData().clear();
 		
 		if(noError) {
 			// Update UI with parser's JSONArray
@@ -559,12 +648,25 @@ public class MainPage extends AnchorPane {
 				commitSHAS.add(sha);
 				// Show MSG , date , committer 
 				// TODO : update UI with this 3 data
+				if (!commitCount.containsKey(name)){
+					commitCount.put(name, 0);
+				}else{
+					commitCount.put(name, commitCount.get(name)+1);
+				}
 			}
+			for(Map.Entry<String, Integer> dateEntry : commitCount.entrySet()){
+    	    	String name = dateEntry.getKey();
+    	    	int count = dateEntry.getValue();
+    	    	System.out.println(name+" " +count);
+    	    	series.getData().add(new XYChart.Data<>(name, count));
+    	    }
+			fileCommitHistory.getData().add(series);
 		}
 	}
 	
 	// Call this if select code chunk is clicked
 	private void displayContent(String fileURL){
+		listViewLines.getItems().clear();
 		FileDownloader fileDownloader = new FileDownloader(fileURL);
 		fileDownloader.downloadFile();
 		
@@ -575,7 +677,7 @@ public class MainPage extends AnchorPane {
 		
 		// TODO : print the content. They are in line
 		for(int i =0 ; i < content.size(); i++){
-			
+			listViewLines.getItems().add(content.get(i));
 		}
 	}
 	
@@ -841,5 +943,20 @@ public class MainPage extends AnchorPane {
 			closePanel.setToX(+(hiddenMenu.getWidth()));
 			closePanel.play();
 		}
+	}
+	
+	public String buildInput(String repo) {
+		String input = "cs3219nus@gmail.com\n";
+		
+		ArrayList<String> emails = data.dataSet.get(mainParser.getOldUrl());
+		for (int i = 0; i < emails.size(); i++) {
+			input += emails.get(i);
+		}
+		
+		input += "\n" + mainParser.getOldUrl() +"\n";
+		
+		input += data.lastCheckTime.get(mainParser.getOldUrl()).getTime();
+		
+		return input;
 	}
 }
