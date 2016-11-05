@@ -7,16 +7,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.zip.CheckedInputStream;
+
+import org.apache.http.impl.execchain.MainClientExec;
+
+import com.amazonaws.services.budgets.model.TimeUnit;
+import com.amazonaws.services.simpleworkflow.flow.worker.SynchronousActivityTaskPoller;
 
 public class Data {
 
 	public Map<String, ArrayList<String>> dataSet;
+	public Map<String, Date> lastCheckTime;
 	private Properties properties;
-	private File file;
+	private File dataFile, timeFile;
 	private S3Connector s3client;
 
 	public Data() {
@@ -25,21 +34,36 @@ public class Data {
 
 	private void init() {
 		dataSet = new HashMap<String, ArrayList<String>>();
+		lastCheckTime = new HashMap<String, Date>();
 		properties = new Properties();
-		file = new File("data.properties");
+		dataFile = new File("data.properties");
+		timeFile = new File("time.properties");
 		s3client = new S3Connector("cs3219.ass5", "ass5_data");
 	}
 
 	public void save() {
 		properties.putAll(dataSet);
 		try {
-			FileOutputStream fileOut = new FileOutputStream(file);
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(dataSet);
-			s3client.uploadFile(file.getName());
-			out.flush();
-			out.close();
-			fileOut.close();
+			FileOutputStream dataFileOut = new FileOutputStream(dataFile);
+			ObjectOutputStream dataOut = new ObjectOutputStream(dataFileOut);
+			dataOut.writeObject(dataSet);
+			
+			FileOutputStream timeFileOut = new FileOutputStream(timeFile);
+			ObjectOutputStream timeOut = new ObjectOutputStream(timeFileOut);
+			timeOut.writeObject(dataSet);
+			
+			s3client.uploadFile(dataFile.getName());
+			s3client.uploadFile(timeFile.getName());
+			
+			
+			dataOut.flush();
+			dataOut.close();
+			
+			timeOut.flush();
+			timeOut.close();
+			
+			dataFileOut.close();
+			timeFileOut.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -51,12 +75,23 @@ public class Data {
 
 	public void load() {
 		try {
-			s3client.downloadFile(file.getName());
-			FileInputStream fileIn = new FileInputStream(file);
-			ObjectInputStream in = new ObjectInputStream(fileIn);
-			dataSet = (HashMap<String, ArrayList<String>>) in.readObject();
-			in.close();
-			fileIn.close();
+			s3client.downloadFile(dataFile.getName());
+			s3client.downloadFile(timeFile.getName());
+			
+			FileInputStream dataFileIn = new FileInputStream(dataFile);
+			ObjectInputStream dataIn = new ObjectInputStream(dataFileIn);
+			
+			FileInputStream timeFileIn = new FileInputStream(timeFile);
+			ObjectInputStream timeIn = new ObjectInputStream(timeFileIn);
+			
+			dataSet = (HashMap<String, ArrayList<String>>) dataIn.readObject();
+			lastCheckTime = (HashMap<String, Date>) timeIn.readObject();
+			
+			dataIn.close();
+			dataFileIn.close();
+			
+			timeIn.close();
+			timeFileIn.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -98,4 +133,15 @@ public class Data {
 		this.add(repo, mailList);
 	}
 
+	public void checkIn(String repo, Date newTimestamp) {
+		if (lastCheckTime.containsKey(repo)) {
+			if (lastCheckTime.get(repo).after(newTimestamp)) {
+				System.out.println("New timestamp cannot be before the current timestamp!");
+			} else {
+				lastCheckTime.put(repo, newTimestamp);
+			}
+		} else {
+			lastCheckTime.put(repo, newTimestamp);
+		}
+	}
 }
