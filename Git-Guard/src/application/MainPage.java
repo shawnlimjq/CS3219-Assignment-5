@@ -659,7 +659,7 @@ public class MainPage extends AnchorPane {
 				// Show MSG , date , committer 
 				// TODO : update UI with this 3 data
 				if (!commitCount.containsKey(name)){
-					commitCount.put(name, 0);
+					commitCount.put(name, 1);
 				}else{
 					commitCount.put(name, commitCount.get(name)+1);
 				}
