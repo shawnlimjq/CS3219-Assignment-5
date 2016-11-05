@@ -44,6 +44,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -168,6 +169,8 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private BarChart<String, Integer> fileCommitHistory;
 	@FXML
+	private BarChart<String, Integer> lineCommitHistory;
+	@FXML
 	private ScatterChart<String, Number> contributorScatter;
 	@FXML
 	private ChoiceBox<String> contributorChoice;
@@ -183,6 +186,10 @@ public class MainPage extends AnchorPane {
 	private Button addNoti;
 	
 	private static MainPage instance = null;
+	private int lineFrom;
+	private int lineTo;
+	
+	public String transferURL="";
 	
 	//private String pieColors[];
 
@@ -251,6 +258,27 @@ public class MainPage extends AnchorPane {
 		//initialisePieColors();
 		initializeHiddenPanel();
 		contributorChart.setAnimated(false);
+		listViewLines.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		listViewLines.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+            public void handle(KeyEvent ke) {
+				if (ke.getCode().equals(KeyCode.ENTER)) {
+					ObservableList<Integer> selectedItems = listViewLines.getSelectionModel().getSelectedIndices();
+					lineFrom = 999999999;
+					lineTo = -1;
+					for (int i : selectedItems) {
+						if(i<=lineFrom){
+							lineFrom=i;
+						}
+						if(i>=lineTo){
+							lineTo=i;
+						}
+					}
+					displayLinesHistory(transferURL,lineFrom+1,lineTo+1);
+				}
+			}
+        });
+		
 		Platform.runLater( () -> this.requestFocus() );
 		data = new Data();
 		
@@ -566,8 +594,9 @@ public class MainPage extends AnchorPane {
 		        	if(listViewFiles.getSelectionModel().getSelectedItem().toString()!="Back"){
 		        		JSONObject innerJsonObj = (JSONObject) jsonArr.get(listViewFiles.getSelectionModel().getSelectedIndex()-1);
 		        		if(innerJsonObj.get("type").equals("file")){
-							displayCommits(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
-							displayContent(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+		        			transferURL = initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString();
+							displayCommits(transferURL);
+							displayContent(transferURL);
 						} else{
 							updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
 						}
@@ -620,7 +649,7 @@ public class MainPage extends AnchorPane {
 			for(Map.Entry<String, Integer> dateEntry : commitCount.entrySet()){
     	    	String name = dateEntry.getKey();
     	    	int count = dateEntry.getValue();
-    	    	//System.out.println(name+" " +count);
+    	    	System.out.println(name+" " +count);
     	    	series.getData().add(new XYChart.Data<>(name, count));
     	    }
 			fileCommitHistory.getData().add(series);
