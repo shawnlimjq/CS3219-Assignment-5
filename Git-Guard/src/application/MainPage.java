@@ -540,8 +540,22 @@ public class MainPage extends AnchorPane {
 
 		        @Override
 		        public void handle(MouseEvent event) {
+		        	if(listViewFiles.getItems().get(0)!="Back"){
+		        		JSONObject innerJsonObj = (JSONObject) jsonArr.get(listViewFiles.getSelectionModel().getSelectedIndex());
+		        		if(innerJsonObj.get("type").equals("file")){
+							displayCommits(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+						} else{
+							updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+						}
+		        	}else{
+		        	
 		        	if(listViewFiles.getSelectionModel().getSelectedItem().toString()!="Back"){
-		        		updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+		        		JSONObject innerJsonObj = (JSONObject) jsonArr.get(listViewFiles.getSelectionModel().getSelectedIndex()-1);
+		        		if(innerJsonObj.get("type").equals("file")){
+							displayCommits(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+						} else{
+							updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+						}
 		        	}else{
 		        		int index=initPath.lastIndexOf('/');
 		        		if(index!=0){
@@ -549,6 +563,7 @@ public class MainPage extends AnchorPane {
 		        		}else{
 		        			updateFileChooser("");
 		        		}
+		        	}
 		        	}
 		        }
 		    });
