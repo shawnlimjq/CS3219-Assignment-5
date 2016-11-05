@@ -174,6 +174,8 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private ListView listViewFiles;
 	@FXML
+	private ListView listViewLines;
+	@FXML
 	private DatePicker startDate;
 	@FXML
 	private Button addBtn;
@@ -565,6 +567,7 @@ public class MainPage extends AnchorPane {
 		        		JSONObject innerJsonObj = (JSONObject) jsonArr.get(listViewFiles.getSelectionModel().getSelectedIndex()-1);
 		        		if(innerJsonObj.get("type").equals("file")){
 							displayCommits(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+							displayContent(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
 						} else{
 							updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
 						}
@@ -617,6 +620,7 @@ public class MainPage extends AnchorPane {
 			for(Map.Entry<String, Integer> dateEntry : commitCount.entrySet()){
     	    	String name = dateEntry.getKey();
     	    	int count = dateEntry.getValue();
+    	    	//System.out.println(name+" " +count);
     	    	series.getData().add(new XYChart.Data<>(name, count));
     	    }
 			fileCommitHistory.getData().add(series);
@@ -625,6 +629,7 @@ public class MainPage extends AnchorPane {
 	
 	// Call this if select code chunk is clicked
 	private void displayContent(String fileURL){
+		listViewLines.getItems().clear();
 		FileDownloader fileDownloader = new FileDownloader(fileURL);
 		fileDownloader.downloadFile();
 		
@@ -635,7 +640,7 @@ public class MainPage extends AnchorPane {
 		
 		// TODO : print the content. They are in line
 		for(int i =0 ; i < content.size(); i++){
-			
+			listViewLines.getItems().add(content.get(i));
 		}
 	}
 	

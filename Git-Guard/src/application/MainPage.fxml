@@ -98,7 +98,11 @@
                                   </Tab>
                                   <Tab fx:id="tabCTabB" text="Select Lines">
                                     <content>
-                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <ListView fx:id="listViewLines" layoutX="8.0" layoutY="7.0" prefHeight="501.0" prefWidth="796.0" />
+                                             </children>
+                                          </AnchorPane>
                                     </content>
                                   </Tab>
                                     <Tab fx:id="tabCTabC" text="Commit History For Selected Line">
