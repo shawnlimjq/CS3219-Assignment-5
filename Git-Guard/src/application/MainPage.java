@@ -113,9 +113,9 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private TextField githubRepoInput;
 	@FXML
-	private TextField notificationHours;
+	private ChoiceBox notificationHours;
 	@FXML
-	private TextField notificationDays;
+	private ChoiceBox notificationMinutes;
 	@FXML
 	private TextArea notifyEmail;
 	@FXML
@@ -259,6 +259,12 @@ public class MainPage extends AnchorPane {
 		initializeHiddenPanel();
 		contributorChart.setAnimated(false);
 		listViewLines.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		for(int i=0;i<24;i++){
+			notificationHours.getItems().add(i);
+		}
+		for(int i=0;i<60;i++){
+			notificationMinutes.getItems().add(i);
+		}
 		listViewLines.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
             public void handle(KeyEvent ke) {
