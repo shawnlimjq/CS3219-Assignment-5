@@ -107,7 +107,18 @@
                                   </Tab>
                                     <Tab fx:id="tabCTabC" text="Commit History For Selected Line">
                                       <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <BarChart fx:id="lineCommitHistory" layoutX="7.0" prefHeight="509.0" prefWidth="801.0">
+                                                  <xAxis>
+                                                    <CategoryAxis side="BOTTOM" />
+                                                  </xAxis>
+                                                  <yAxis>
+                                                    <NumberAxis side="LEFT" />
+                                                  </yAxis>
+                                                </BarChart>
+                                             </children>
+                                          </AnchorPane>
                                       </content>
                                     </Tab>
                                 </tabs>
