@@ -251,6 +251,7 @@ public class MainPage extends AnchorPane {
 					checkError = mainParser.parseURL();
 					checkError();
 					data.checkIn(mainParser.getOldUrl(), new Date());
+					data.save();
 				
 					if(checkError==true){
 						loadA = false;
@@ -821,5 +822,20 @@ public class MainPage extends AnchorPane {
 			closePanel.setToX(+(hiddenMenu.getWidth()));
 			closePanel.play();
 		}
+	}
+	
+	public String buildInput(String repo) {
+		String input = "cs3219nus@gmail.com\n";
+		
+		ArrayList<String> emails = data.dataSet.get(mainParser.getOldUrl());
+		for (int i = 0; i < emails.size(); i++) {
+			input += emails.get(i);
+		}
+		
+		input += "\n" + mainParser.getOldUrl() +"\n";
+		
+		input += data.lastCheckTime.get(mainParser.getOldUrl()).getTime();
+		
+		return input;
 	}
 }
