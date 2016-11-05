@@ -20,6 +20,8 @@ import java.util.TreeMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.amazonaws.services.codedeploy.model.InstanceNameAlreadyRegisteredException;
+
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -98,6 +100,7 @@ public class MainPage extends AnchorPane {
 	
 	private Parser mainParser;
 	private Data data;
+	private CloudWatchConnector cwClient;
 	
 	private boolean loadA = false;
 	private boolean loadB = false;
@@ -287,6 +290,7 @@ public class MainPage extends AnchorPane {
 		
 		Platform.runLater( () -> this.requestFocus() );
 		data = new Data();
+		cwClient = new CloudWatchConnector();
 		
 		
 		githubRepoInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -298,7 +302,6 @@ public class MainPage extends AnchorPane {
 					noError = mainParser.parseURL();
 					checkError();
 					data.checkIn(mainParser.getOldUrl(), new Date());
-
 					data.save();
 					
 					if(noError==true){
@@ -392,6 +395,13 @@ public class MainPage extends AnchorPane {
 	            		data.add(mainParser.getOldUrl(), emailAdds);
 	            		data.save();
 	            	}
+	            	
+	            	Integer hours = (Integer) notificationHours.getValue();
+	            	Integer minutes = (Integer) notificationMinutes.getValue();
+	            	
+	            	System.out.println(cronMaker(minutes));
+	            	cwClient.addScheduledEvent(mainParser.getOldUrl().replaceAll("https://github.com", "repo-").replaceAll("/", "-"), "rate(1 minute)", buildInput(mainParser.getOldUrl()));
+	            	
             	}
             }
 		});
@@ -946,7 +956,7 @@ public class MainPage extends AnchorPane {
 	}
 	
 	public String buildInput(String repo) {
-		String input = "cs3219nus@gmail.com\n";
+		String input = "\"cs3219nus@gmail.com\\n";
 		
 		ArrayList<String> emails = data.dataSet.get(mainParser.getOldUrl());
 		for (int i = 0; i < emails.size(); i++) {
@@ -958,10 +968,21 @@ public class MainPage extends AnchorPane {
 			
 		}
 		
-		input += "\n" + mainParser.getOldUrl() +"\n";
+		
+		input += "\\n" + mainParser.getOldUrl() +"\\n";
 		
 		input += data.lastCheckTime.get(mainParser.getOldUrl()).getTime();
 		
-		return input;
+		//{ "firstName":"John", "lastName":"Doe" }
+		
+		//String input = "{ \"FROM\":\"%1s\", \"TO\":\"%2s\", \"repo\":\"%3s\", \"time\":\"%4s\" }";
+		
+		System.out.println(input + "\"");
+		
+		return input+"\"";
+	}
+	
+	public String cronMaker(int minutely) {
+		return "cron(0/" + minutely + " * * * ? *)";
 	}
 }
