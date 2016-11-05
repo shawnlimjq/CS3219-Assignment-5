@@ -950,7 +950,12 @@ public class MainPage extends AnchorPane {
 		
 		ArrayList<String> emails = data.dataSet.get(mainParser.getOldUrl());
 		for (int i = 0; i < emails.size(); i++) {
-			input += emails.get(i);
+			if (i == emails.size()-1) {
+				input += emails.get(i);
+			} else {
+				input += emails.get(i) + ",";
+			}
+			
 		}
 		
 		input += "\n" + mainParser.getOldUrl() +"\n";

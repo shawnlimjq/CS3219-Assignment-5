@@ -64,18 +64,10 @@ public class CloudWatchConnector {
 		client.putTargets(request);
 	}
 	
-	//parse interval to schedule expression
-	private String parseExpression(String interval){
-		/*
-		 * TO BE COMPLETED
-		 */
-	}
-	
 	//Repo = rule name of event rule
 	//Interval = schedule expression
 	//Input = json input
-	public void addScheduledEvent(String repo, String interval, String input){
-		String scheduleExpression = parseExpression(interval);
+	public void addScheduledEvent(String repo, String scheduleExpression, String input){
 		createScheduleRule(repo, scheduleExpression);
 		addTargetToRule(lambdaName, lambdaARN, repo, input);
 	}
