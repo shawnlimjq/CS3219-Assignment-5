@@ -544,7 +544,7 @@ public class MainPage extends AnchorPane {
 		        		updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
 		        	}else{
 		        		int index=initPath.lastIndexOf('/');
-		        		if(index!=-1){
+		        		if(index!=0){
 		        			updateFileChooser(initPath.substring(0,index));
 		        		}else{
 		        			updateFileChooser("");
