@@ -144,5 +144,4 @@ public class Data {
 			lastCheckTime.put(repo, newTimestamp);
 		}
 	}
-	
 }

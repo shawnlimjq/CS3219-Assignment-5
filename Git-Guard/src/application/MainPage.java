@@ -120,11 +120,19 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private TabPane mainTabPane;
 	@FXML
+	private TabPane tabCTabPane;
+	@FXML
 	private Tab tabA;
 	@FXML
 	private Tab tabB;
 	@FXML
 	private Tab tabC;
+	@FXML
+	private Tab tabCTabA;
+	@FXML
+	private Tab tabCTabB;
+	@FXML
+	private Tab tabCTabC;
 	@FXML
 	private Tab tabD;
 	@FXML
@@ -157,6 +165,8 @@ public class MainPage extends AnchorPane {
 	private PieChart piechartLine;
 	@FXML
 	private BarChart<String, Integer> contributorChart;
+	@FXML
+	private BarChart<String, Integer> fileCommitHistory;
 	@FXML
 	private ScatterChart<String, Number> contributorScatter;
 	@FXML
@@ -242,6 +252,7 @@ public class MainPage extends AnchorPane {
 		Platform.runLater( () -> this.requestFocus() );
 		data = new Data();
 		
+		
 		githubRepoInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			public void handle(KeyEvent ke) {
@@ -252,7 +263,7 @@ public class MainPage extends AnchorPane {
 					checkError();
 					data.checkIn(mainParser.getOldUrl(), new Date());
 					data.save();
-				
+					
 					if(checkError==true){
 						loadA = false;
 						loadB = false;
@@ -577,6 +588,9 @@ public class MainPage extends AnchorPane {
 		CommitParser commitParser = new CommitParser(mainParser.getOldUrl(), "", "", filePath);
 		checkError = commitParser.parseURL();
 		checkError();
+		XYChart.Series<String, Integer> series = new XYChart.Series<>();
+		HashMap<String, Integer> commitCount = new HashMap<String, Integer>();
+		fileCommitHistory.getData().clear();
 		
 		if(checkError) {
 			// Update UI with parser's JSONArray
@@ -594,7 +608,18 @@ public class MainPage extends AnchorPane {
 				commitSHAS.add(sha);
 				// Show MSG , date , committer 
 				// TODO : update UI with this 3 data
+				if (!commitCount.containsKey(name)){
+					commitCount.put(name, 0);
+				}else{
+					commitCount.put(name, commitCount.get(name)+1);
+				}
 			}
+			for(Map.Entry<String, Integer> dateEntry : commitCount.entrySet()){
+    	    	String name = dateEntry.getKey();
+    	    	int count = dateEntry.getValue();
+    	    	series.getData().add(new XYChart.Data<>(name, count));
+    	    }
+			fileCommitHistory.getData().add(series);
 		}
 	}
 	
