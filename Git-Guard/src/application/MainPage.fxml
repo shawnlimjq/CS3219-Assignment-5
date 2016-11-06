@@ -10,6 +10,7 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -17,8 +18,6 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.ToggleButton?>
 
 <fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1107.0" style="-fx-background-color: white;" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
@@ -36,7 +35,7 @@
                     <content>
                       <AnchorPane fx:id="tabAAP" minHeight="0.0" minWidth="0.0" prefHeight="564.0" prefWidth="1034.0">
                            <children>
-                              <PieChart fx:id="piechartA" layoutX="42.0" layoutY="21.0" prefHeight="529.0" prefWidth="971.0" title="Number of Commits for All Team Members" />
+                              <PieChart fx:id="piechartA" layoutX="42.0" layoutY="21.0" prefHeight="529.0" prefWidth="971.0" title="Number of Commits for All Team Members" visible="false" />
                            </children>
                         </AnchorPane>
                     </content>
@@ -52,7 +51,7 @@
                               <DatePicker fx:id="startDate" layoutX="452.0" layoutY="25.0" promptText="Start Date" />
                               <ChoiceBox fx:id="contributorChoice" layoutX="122.0" layoutY="25.0" prefWidth="150.0" />
                               <Button fx:id="addBtn" layoutX="849.0" layoutY="25.0" mnemonicParsing="false" text="Add" />
-                              <ScatterChart fx:id="contributorScatter" animated="false" layoutX="29.0" layoutY="104.0" prefHeight="400.0" prefWidth="978.0" visible="false">
+                              <ScatterChart fx:id="contributorScatter" animated="false" layoutX="29.0" layoutY="104.0" prefHeight="400.0" prefWidth="978.0" title="Commits History Per Day By Each Member" visible="false">
                                 <xAxis>
                                   <CategoryAxis side="BOTTOM" />
                                 </xAxis>
@@ -128,7 +127,7 @@
                     <content>
                       <AnchorPane fx:id="tabDAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1034.0">
                            <children>
-                              <PieChart fx:id="piechartLine" animated="false" layoutX="42.0" layoutY="21.0" prefHeight="529.0" prefWidth="971.0" />
+                              <PieChart fx:id="piechartLine" animated="false" layoutX="42.0" layoutY="21.0" prefHeight="529.0" prefWidth="971.0" title="Lines of Commits Per Team Member" />
                            </children></AnchorPane>
                     </content>
                   </ScrollPane>
@@ -146,15 +145,15 @@
                   <Font name="System Bold" size="15.0" />
                </font>
             </Label>
-             <ChoiceBox fx:id="notificationDayDay" layoutX="114.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0"/>
+             <ChoiceBox fx:id="notificationDayDay" layoutX="114.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0" />
             <ChoiceBox fx:id="notificationDayHour" layoutX="165.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0" />
             <ChoiceBox fx:id="notificationDayMin" layoutX="216.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0" />
             <ChoiceBox fx:id="notificationHours" layoutX="114.0" layoutY="201.0" prefHeight="25.0" prefWidth="150.0" />
             <ChoiceBox fx:id="notificationMinutes" layoutX="114.0" layoutY="245.0" prefHeight="25.0" prefWidth="150.0" />
-            <RadioButton fx:id="byDay" layoutX="10.0" layoutY="161.0" text="By Day: " selected="false"/>
-            <RadioButton fx:id="byHour" layoutX="10.0" layoutY="205.0" text="By Hours: " selected="false"/>
-            <RadioButton fx:id="byMin" layoutX="10.0" layoutY="249.0" text="By Minutes: " selected="false"/>
-            <Label fx:id="notificationFeedback" layoutX="10.0" layoutY="277.0" visible="false" prefHeight="17.0" prefWidth="255.0" textOverrun="CLIP" />
+            <RadioButton fx:id="byDay" layoutX="10.0" layoutY="161.0" selected="false" text="By Day: " />
+            <RadioButton fx:id="byHour" layoutX="10.0" layoutY="205.0" selected="false" text="By Hours: " />
+            <RadioButton fx:id="byMin" layoutX="10.0" layoutY="249.0" selected="false" text="By Minutes: " />
+            <Label fx:id="notificationFeedback" layoutX="10.0" layoutY="277.0" prefHeight="17.0" prefWidth="255.0" textOverrun="CLIP" visible="false" />
          </children>
       </AnchorPane>
    </children>

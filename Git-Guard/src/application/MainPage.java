@@ -334,6 +334,7 @@ public class MainPage extends AnchorPane {
 						
 						loadA = false;
 						loadB = false;
+						piechartA.visibleProperty().set(true);
 
 						jsonObj= mainParser.getJSONObj();
 						mainTabPane.visibleProperty().set(true);
@@ -582,9 +583,7 @@ public class MainPage extends AnchorPane {
     	    m1 = new TreeMap(m);
     	    for(Entry<Date, Integer> dateEntry : m1.entrySet()){
     	    	String date = dateEntry.getKey().toString();
-    	    	System.out.println(date);
     	    	Number count = dateEntry.getValue();
-    	    	System.out.println(count);
     	    	series.getData().add(new XYChart.Data<>(date, count));
     	    }
     	}
