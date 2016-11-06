@@ -600,35 +600,44 @@ public class MainPage extends AnchorPane {
 
 		        @Override
 		        public void handle(MouseEvent event) {
-		        	if(listViewFiles.getItems().get(0)!="Back"){
-		        		JSONObject innerJsonObj = (JSONObject) jsonArr.get(listViewFiles.getSelectionModel().getSelectedIndex());
-		        		if(innerJsonObj.get("type").equals("file")){
-							displayCommits(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
-						} else{
-							updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
+					if (listViewFiles.getSelectionModel().getSelectedIndex() != -1) {
+						if (listViewFiles.getItems().get(0) != "Back") {
+							JSONObject innerJsonObj = (JSONObject) jsonArr
+									.get(listViewFiles.getSelectionModel().getSelectedIndex());
+							if (innerJsonObj.get("type").equals("file")) {
+								displayCommits(initPath + "/"
+										+ listViewFiles.getSelectionModel().getSelectedItem().toString());
+							} else {
+								updateFileChooser(initPath + "/"
+										+ listViewFiles.getSelectionModel().getSelectedItem().toString());
+							}
+
+						} else {
+
+							if (listViewFiles.getSelectionModel().getSelectedItem().toString() != "Back") {
+								JSONObject innerJsonObj = (JSONObject) jsonArr
+										.get(listViewFiles.getSelectionModel().getSelectedIndex() - 1);
+								if (innerJsonObj.get("type").equals("file")) {
+									transferURL = initPath + "/"
+											+ listViewFiles.getSelectionModel().getSelectedItem().toString();
+									displayCommits(transferURL);
+									displayContent((String) innerJsonObj.get("download_url"));
+								} else {
+									updateFileChooser(initPath + "/"
+											+ listViewFiles.getSelectionModel().getSelectedItem().toString());
+								}
+							} else {
+								int index = initPath.lastIndexOf('/');
+								if (index != 0) {
+									updateFileChooser(initPath.substring(0, index));
+								} else {
+									updateFileChooser("");
+								}
+							}
 						}
-		        	}else{
-		        	
-		        	if(listViewFiles.getSelectionModel().getSelectedItem().toString()!="Back"){
-		        		JSONObject innerJsonObj = (JSONObject) jsonArr.get(listViewFiles.getSelectionModel().getSelectedIndex()-1);
-		        		if(innerJsonObj.get("type").equals("file")){
-		        			transferURL = initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString();
-							displayCommits(transferURL);
-							displayContent((String) innerJsonObj.get("download_url"));
-						} else{
-							updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
-						}
-		        	}else{
-		        		int index=initPath.lastIndexOf('/');
-		        		if(index!=0){
-		        			updateFileChooser(initPath.substring(0,index));
-		        		}else{
-		        			updateFileChooser("");
-		        		}
-		        	}
-		        	}
-		        }
-		    });
+					}
+				}
+			});
 		}
 	}
 	
