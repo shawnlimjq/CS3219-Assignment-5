@@ -304,6 +304,7 @@ public class MainPage extends AnchorPane {
 
             public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
+					tabCTabC.disableProperty().set(false);
 					ObservableList<Integer> selectedItems = listViewLines.getSelectionModel().getSelectedIndices();
 					lineFrom = 999999999;
 					lineTo = -1;
@@ -593,6 +594,7 @@ public class MainPage extends AnchorPane {
 		Series<String, Number> series = new XYChart.Series<>();
     	for (Map.Entry<String, HashMap<String, Integer>> committerEntry : committerCommits.entrySet()) {
     	    String committer = committerEntry.getKey();
+    	    series.setName(committer);
     	    HashMap<String, Integer> dateCount = committerEntry.getValue();
     	    
     	    /*for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
@@ -723,8 +725,12 @@ public class MainPage extends AnchorPane {
 							JSONObject innerJsonObj = (JSONObject) jsonArr
 									.get(listViewFiles.getSelectionModel().getSelectedIndex());
 							if (innerJsonObj.get("type").equals("file")) {
-								displayCommits(initPath + "/"
-										+ listViewFiles.getSelectionModel().getSelectedItem().toString());
+								tabCTabPane.disableProperty().set(false);
+								tabCTabPane.visibleProperty().set(true);
+								transferURL = initPath + "/"
+										+ listViewFiles.getSelectionModel().getSelectedItem().toString();
+								displayCommits(transferURL);
+								displayContent((String) innerJsonObj.get("download_url"));
 							} else {
 								updateFileChooser(initPath + "/"
 										+ listViewFiles.getSelectionModel().getSelectedItem().toString());
@@ -736,6 +742,8 @@ public class MainPage extends AnchorPane {
 								JSONObject innerJsonObj = (JSONObject) jsonArr
 										.get(listViewFiles.getSelectionModel().getSelectedIndex() - 1);
 								if (innerJsonObj.get("type").equals("file")) {
+									tabCTabPane.disableProperty().set(false);
+									tabCTabPane.visibleProperty().set(true);
 									transferURL = initPath + "/"
 											+ listViewFiles.getSelectionModel().getSelectedItem().toString();
 									displayCommits(transferURL);
