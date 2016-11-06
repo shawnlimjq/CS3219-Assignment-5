@@ -778,7 +778,6 @@ public class MainPage extends AnchorPane {
 	
 	private void displayLinesHistory(String filePath, int from, int to) {
 		// 0 is the latest commit
-		
 		HashMap <String, Integer> authorChanges = new HashMap<String, Integer>();
 		for(int shaIndex =0 ; shaIndex < commitSHAS.size(); shaIndex++){
 			// Commit SHA
@@ -848,6 +847,8 @@ public class MainPage extends AnchorPane {
 						authorChanges.put(name, changes);
 					}
 				}
+				lineCommitHistory.setTitle("Commit History Per Team Member From Line " + from + " to " + to);
+				lineCommitHistory.setData((ObservableList<Series<String, Integer>>) authorChanges);
 			}
 		}
 	}
