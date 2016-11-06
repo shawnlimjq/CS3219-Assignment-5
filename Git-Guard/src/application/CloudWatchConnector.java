@@ -73,13 +73,6 @@ public class CloudWatchConnector {
 	//Interval = schedule expression
 	//Input = json input
 	public void addScheduledEvent(String repo, String scheduleExpression, String input){
-		//add permission
-		AddPermissionRequest req = new AddPermissionRequest().withFunctionName(lambdaName);
-		req.setPrincipal("events.amazonaws.com");
-		req.setStatementId("statement");
-		req.setAction("lambda:*");
-		lambdaClient.addPermission(req);
-		
 		createScheduleRule(repo, scheduleExpression);
 		addTargetToRule(lambdaName, lambdaARN, repo, input);
 	}

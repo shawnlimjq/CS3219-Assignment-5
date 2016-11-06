@@ -165,7 +165,7 @@
             <ChoiceBox fx:id="notificationMinutes" layoutX="94.0" layoutY="201.0" prefHeight="25.0" prefWidth="166.0" />
             <Label layoutX="32.0" layoutY="161.0" text="Hours: " />
             <Label layoutX="27.0" layoutY="205.0" text="Minutes: " />
-            <Label fx:id="notificationError" layoutX="10.0" layoutY="233.0" prefHeight="17.0" prefWidth="255.0" textOverrun="CLIP" />
+            <Label fx:id="notificationError" layoutX="10.0" layoutY="233.0" text="Email provided was invalid!" textFill="RED" visible="false" prefHeight="17.0" prefWidth="255.0" textOverrun="CLIP" />
          </children>
       </AnchorPane>
    </children>
