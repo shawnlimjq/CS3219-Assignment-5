@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import org.joda.time.Days;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -24,6 +25,7 @@ import com.amazonaws.services.codedeploy.model.InstanceNameAlreadyRegisteredExce
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -41,18 +43,22 @@ import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -113,9 +119,21 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private Label notifyTitle;
 	@FXML
-	private Label notificationError;
+	private Label notificationFeedback;
 	@FXML
 	private TextField githubRepoInput;
+	@FXML
+	private RadioButton byDay;
+	@FXML
+	private RadioButton byHour;
+	@FXML
+	private RadioButton byMin;
+	@FXML
+	private ChoiceBox notificationDayDay;
+	@FXML
+	private ChoiceBox notificationDayHour;
+	@FXML
+	private ChoiceBox notificationDayMin;
 	@FXML
 	private ChoiceBox notificationHours;
 	@FXML
@@ -263,11 +281,24 @@ public class MainPage extends AnchorPane {
 		initializeHiddenPanel();
 		contributorChart.setAnimated(false);
 		listViewLines.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		ToggleGroup group = new ToggleGroup();
+		byDay.setToggleGroup(group);
+		byHour.setToggleGroup(group);
+		byMin.setToggleGroup(group);
+		String[] days = {"Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"};
+		for (int i = 0; i < 7; i ++) {
+			notificationDayDay.getItems().add(days[i]);
+		}
 		for(int i=0;i<24;i++){
+			notificationDayHour.getItems().add(i);
 			notificationHours.getItems().add(i);
 		}
 		for(int i=0;i<60;i++){
-			notificationMinutes.getItems().add(i);
+			notificationDayMin.getItems().add(i);
+		}
+		int[] minutesInterval = {1, 2, 5, 10, 15, 30, 45, 60};
+		for (int i = 0; i < 8; i++) {
+			notificationMinutes.getItems().add(minutesInterval[i]);
 		}
 		listViewLines.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
@@ -389,6 +420,7 @@ public class MainPage extends AnchorPane {
             public void handle(MouseEvent t) {
                 // Wenhao, link to your s3 service here. Email address delimited by new line
             	String emails = notifyEmail.getText();
+            	
             	if(!emails.equals("")){
 	            	ArrayList<String> emailAdds = new ArrayList<String>(Arrays.asList(emails.split("\n")));
 	            	
@@ -406,32 +438,89 @@ public class MainPage extends AnchorPane {
 	            		
 	            		if (emailValid) {
 	            		
-	            			notificationError.setVisible(false);
+	            			notificationFeedback.setVisible(false);
 	            			
 		            		// Do something with mainParser.getUrl() and the emailAdds. 
 		            		// notificationDays.getText() and notificationHours.getTexT() as well
 		            		data.add(mainParser.getOldUrl(), emailAdds);
 		            		data.save();
-		            		
-		            		Integer hours = (Integer) notificationHours.getValue();
-			            	Integer minutes = (Integer) notificationMinutes.getValue();
 			            	
-			            	System.out.println(cronMaker(minutes));
-			            	cwClient.addScheduledEvent(mainParser.getOldUrl().replaceAll("https://github.com", "repo").replaceAll("/", "-"), 
-			            			"rate(1 minute)", buildInput(mainParser.getOldUrl()));
+		            		String cron = generateCronExpression();
+		            		if (cron != null) {
+		            			String ruleName = mainParser.getOldUrl().replaceAll("https://github.com", "repo").replaceAll("/", "-");
+				            	cwClient.addScheduledEvent(ruleName, cron, buildInput(mainParser.getOldUrl()));
+				            	
+				            	notificationFeedback.setVisible(true);
+				            	notificationFeedback.setTextFill(Color.GREEN);
+				            	notificationFeedback.setText("Schedule added!");
+				            	System.out.println("Schedule added! - " + cron);
+				            	
+		            		} else {
+		            			notificationFeedback.setVisible(true);
+				            	notificationFeedback.setTextFill(Color.RED);
+				            	notificationFeedback.setText("Please choose an interval option!");
+				            	System.err.println("Please choose an interval option!");
+		            		}
 	            		
 	            		} else {
 	            			
-	            			notificationError.setVisible(true);
-	            			System.err.println("Email provided was invalid!");
+	            			notificationFeedback.setVisible(true);
+	            			notificationFeedback.setTextFill(Color.RED);
+	            			notificationFeedback.setText("Email(s) provided is invalid!");
+	            			System.err.println("Email(s) provided is invalid!");
 	            			
 	            		}
 	            	}
 	            	
-	            	
-	            	
+            	} else {
+            		notificationFeedback.setVisible(true);
+        			notificationFeedback.setTextFill(Color.RED);
+        			notificationFeedback.setText("Please enter an email address!");
+        			System.err.println("Please enter an email address!");
             	}
             }
+		});
+		
+		byDay.setOnMouseClicked(new EventHandler<MouseEvent>()
+		{
+			@Override
+			public void handle(MouseEvent t) {
+				byHour.setSelected(false);
+				byMin.setSelected(false);
+				notificationDayDay.setDisable(false);
+        		notificationDayHour.setDisable(false);
+        		notificationDayMin.setDisable(false);
+        		notificationHours.setDisable(true);
+        		notificationMinutes.setDisable(true);
+			}
+		});
+		
+		byHour.setOnMouseClicked(new EventHandler<MouseEvent>()
+		{
+			@Override
+			public void handle(MouseEvent t) {
+				byDay.setSelected(false);
+				byMin.setSelected(false);
+        		notificationDayDay.setDisable(true);
+        		notificationDayHour.setDisable(true);
+        		notificationDayMin.setDisable(true);
+        		notificationHours.setDisable(false);
+        		notificationMinutes.setDisable(true);
+			}
+		});
+		
+		byMin.setOnMouseClicked(new EventHandler<MouseEvent>()
+		{
+			@Override
+			public void handle(MouseEvent t) {
+				byDay.setSelected(false);
+				byHour.setSelected(false);
+        		notificationDayDay.setDisable(true);
+        		notificationDayHour.setDisable(true);
+        		notificationDayMin.setDisable(true);
+        		notificationHours.setDisable(true);
+        		notificationMinutes.setDisable(false);
+			}
 		});
 	}
 	
@@ -942,8 +1031,7 @@ public class MainPage extends AnchorPane {
 				input += emails.get(i);
 			} else {
 				input += emails.get(i) + ",";
-			}
-			
+			}	
 		}
 		
 		input += "\\n" + mainParser.getOldUrl() +"\\n";
@@ -955,8 +1043,33 @@ public class MainPage extends AnchorPane {
 		return input+"\"";
 	}
 	
-	public String cronMaker(int minutely) {
-		return "cron(0/" + minutely + " * * * ? *)";
+	public String generateCronExpression() {
+		
+		String cron = null;
+		
+		if (byDay.isSelected() 
+				&& notificationDayDay.getValue() != null
+				&& notificationDayHour.getValue() != null
+				&& notificationDayMin.getValue() != null) {
+			String day = (String) notificationDayDay.getValue();
+			day = day.toUpperCase();
+			Integer hour = (Integer) notificationDayHour.getValue();
+			Integer min = (Integer) notificationDayMin.getValue();
+			cron = "cron(" + min + " " + hour + " ? * " + day + " *)";
+		} else if (byHour.isSelected() && notificationHours.getValue() != null) {
+			Integer hour = (Integer) notificationHours.getValue();
+			cron = "cron(0 0/" + hour + " * * ? *)";
+		} else if (byMin.isSelected() && notificationMinutes.getValue() != null) {
+			Integer min = (Integer) notificationMinutes.getValue();
+			cron = "cron(0/" + min + " * * * ? *)";
+		} else {
+			System.err.println("Please choose an interval options!");
+		}
+		
+		System.out.println(cron);
+		return cron;
+		
+		//return "cron(0/" + minutely + " * * * ? *)";
 	}
 	
 	public static boolean isValidEmailAddress(String email) {
