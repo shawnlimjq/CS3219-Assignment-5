@@ -17,6 +17,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleButton?>
 
 <fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1107.0" style="-fx-background-color: white;" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
@@ -135,20 +137,24 @@
         </tabs>
       </TabPane>
       <Label fx:id="errorLabel" layoutX="45.0" layoutY="113.0" text="Unable to parse URL! Repo might be private or it doesn't exist!" textFill="RED" visible="false" />
-      <AnchorPane fx:id="hiddenMenu" layoutX="-278.0" layoutY="222.0" prefHeight="311.0" prefWidth="278.0" style="-fx-background-color: white;">
+      <AnchorPane fx:id="hiddenMenu" layoutX="-278.0" layoutY="222.0" prefHeight="345.0" prefWidth="278.0" style="-fx-background-color: white;">
          <children>
-            <Button fx:id="addNoti" layoutX="120.0" layoutY="259.0" mnemonicParsing="false" text="Add" />
-            <TextArea fx:id="notifyEmail" layoutX="19.0" layoutY="66.0" prefHeight="67.0" prefWidth="240.0" promptText="Emails" />
+            <Button fx:id="addNoti" layoutX="120.0" layoutY="300.0" mnemonicParsing="false" text="Add" />
+            <TextArea fx:id="notifyEmail" layoutX="19.0" layoutY="66.0" prefHeight="67.0" prefWidth="244.0" promptText="Emails" />
             <Label fx:id="notifyTitle" layoutX="97.0" layoutY="14.0" text="Notification">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </Label>
-            <ChoiceBox fx:id="notificationHours" layoutX="94.0" layoutY="157.0" prefHeight="25.0" prefWidth="166.0" />
-            <ChoiceBox fx:id="notificationMinutes" layoutX="94.0" layoutY="201.0" prefHeight="25.0" prefWidth="166.0" />
-            <Label layoutX="32.0" layoutY="161.0" text="Hours: " />
-            <Label layoutX="27.0" layoutY="205.0" text="Minutes: " />
-            <Label fx:id="notificationError" layoutX="10.0" layoutY="233.0" prefHeight="17.0" prefWidth="255.0" text="Email provided was invalid!" textFill="RED" textOverrun="CLIP" visible="false" />
+             <ChoiceBox fx:id="notificationDayDay" layoutX="114.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0"/>
+            <ChoiceBox fx:id="notificationDayHour" layoutX="165.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0" />
+            <ChoiceBox fx:id="notificationDayMin" layoutX="216.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0" />
+            <ChoiceBox fx:id="notificationHours" layoutX="114.0" layoutY="201.0" prefHeight="25.0" prefWidth="150.0" />
+            <ChoiceBox fx:id="notificationMinutes" layoutX="114.0" layoutY="245.0" prefHeight="25.0" prefWidth="150.0" />
+            <RadioButton fx:id="byDay" layoutX="10.0" layoutY="161.0" text="By Day: " selected="false"/>
+            <RadioButton fx:id="byHour" layoutX="10.0" layoutY="205.0" text="By Hours: " selected="false"/>
+            <RadioButton fx:id="byMin" layoutX="10.0" layoutY="249.0" text="By Minutes: " selected="false"/>
+            <Label fx:id="notificationFeedback" layoutX="10.0" layoutY="277.0" visible="false" prefHeight="17.0" prefWidth="255.0" textOverrun="CLIP" />
          </children>
       </AnchorPane>
    </children>
