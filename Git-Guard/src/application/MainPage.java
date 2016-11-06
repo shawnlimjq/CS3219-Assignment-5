@@ -779,6 +779,8 @@ public class MainPage extends AnchorPane {
 	
 	private void displayLinesHistory(String filePath, int from, int to) {
 		// 0 is the latest commit
+		
+		HashMap <String, Integer> authorChanges = new HashMap<String, Integer>();
 		for(int shaIndex =0 ; shaIndex < commitSHAS.size(); shaIndex++){
 			// Commit SHA
 			FileCommitParser fileCommitParser = new FileCommitParser(mainParser.getOldUrl(), commitSHAS.get(shaIndex));
@@ -787,6 +789,10 @@ public class MainPage extends AnchorPane {
 			
 			if(noError) {
 				JSONObject jsonObj = fileCommitParser.getJSONObj();
+				
+				JSONObject commitObj = (JSONObject) jsonObj.get(COMMIT);
+				JSONObject authorObj = (JSONObject) commitObj.get(AUTHOR);
+				String name = (String) authorObj.get(NAME);
 				JSONArray jsonFiles = (JSONArray) jsonObj.get(FILES);
 				for(int i = 0 ; i< jsonFiles.size(); i++){
 					JSONObject jsonFile = (JSONObject) jsonFiles.get(i);
@@ -806,6 +812,11 @@ public class MainPage extends AnchorPane {
 						
 						String [] lines = patch.split("\n");
 						String header = lines[0];
+						int changes = 0 ;
+						
+						if(authorChanges.containsKey(name)){
+							changes = authorChanges.get(name);
+						}
 						
 						if(from <= startAddMax){
 							for (int z = 1 ; z < lines.length ; z++){
@@ -815,8 +826,8 @@ public class MainPage extends AnchorPane {
 									break;
 								}
 								
-								if(lines[z].charAt(0) != '-' && startAdd + z - 1 >= from){
-									// Populate right list view
+								if(lines[z].charAt(0) == '+' && startAdd + z - 1 >= from){
+									changes += 1;
 								}
 							}
 						}
@@ -829,11 +840,13 @@ public class MainPage extends AnchorPane {
 									break;
 								}
 								
-								if(lines[z].charAt(0) != '+'  && startDel + z - 1 >= from){
-									// Populate left list view
+								if(lines[z].charAt(0) == '-'  && startDel + z - 1 >= from){
+									changes += 1;
 								}
 							}
 						}
+						
+						authorChanges.put(name, changes);
 					}
 				}
 			}
