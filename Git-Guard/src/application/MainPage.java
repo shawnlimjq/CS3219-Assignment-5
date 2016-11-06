@@ -11,10 +11,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
@@ -32,10 +30,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
@@ -633,6 +628,7 @@ public class MainPage extends AnchorPane {
 
 		        @Override
 		        public void handle(MouseEvent event) {
+		        	
 					if (listViewFiles.getSelectionModel().getSelectedIndex() != -1) {
 						if (listViewFiles.getItems().get(0) != "Back") {
 							JSONObject innerJsonObj = (JSONObject) jsonArr
@@ -719,18 +715,15 @@ public class MainPage extends AnchorPane {
 	// Call this if select code chunk is clicked
 	private void displayContent(String downloadLink){
 		listViewLines.getItems().clear();
+		
 		FileDownloader fileDownloader = new FileDownloader(downloadLink);
 		fileDownloader.downloadFile();
-		
-		FileReader fileReader = new FileReader(downloadLink);
-		fileReader.readFile();
-		
-		ArrayList<String> content = fileReader.getContent();
-		
+		ArrayList<String> content = fileDownloader.getContent();
 		// TODO : print the content. They are in line
 		for(int i =0 ; i < content.size(); i++){
 			listViewLines.getItems().add(content.get(i));
 		}
+		
 	}
 	
 	private void displayLinesHistory(String filePath, int from, int to) {

@@ -1,56 +1,36 @@
 package application;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class FileDownloader {
 	
 	private String fileURL;
+	private ArrayList<String> content;
 	
 	public FileDownloader(String fileURL){
 		this.fileURL = fileURL;
+		this.content = new ArrayList<String>();
 	}
 	
 	public void downloadFile() {
 		try {
-			// Download file and display : Taken from http://www.codejava.net/java-se/networking/use-httpurlconnection-to-download-file-from-an-http-url
-		    URL url = new URL(fileURL);
-		    HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-		    int responseCode = httpConn.getResponseCode();
-			 
-			// always check HTTP response code first
-			if (responseCode == HttpURLConnection.HTTP_OK) {
-			    String fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1,
-                        fileURL.length());
-			 
-				// opens input stream from the HTTP connection
-				InputStream inputStream = httpConn.getInputStream();
-				String saveFilePath = fileURL.replace("https://", "");
-			 
-				// opens an output stream to save into file
-				new File(saveFilePath.substring(0, saveFilePath.lastIndexOf("/"))).mkdirs();
-	            FileOutputStream outputStream = new FileOutputStream(saveFilePath);
-		 
-	            int bytesRead = -1;
-	            byte[] buffer = new byte[1024];
-	            while ((bytesRead = inputStream.read(buffer)) != -1) {
-	                outputStream.write(buffer, 0, bytesRead);
-	            }
-		 
-	            outputStream.close();
-	            inputStream.close();
-	 
-	            System.out.println("File downloaded");
-	            
-			} else {
-			    System.out.println("No file to download. Server replied HTTP code: " + responseCode);
+			URL buildUrl = new URL(fileURL);
+			// read from the URL
+			Scanner scan = new Scanner(buildUrl.openStream());
+			String str = new String();
+			while (scan.hasNextLine()){
+			    content.add(scan.nextLine());
 			}
-			httpConn.disconnect();
+			scan.close();
+			
 		} catch (Exception e){
 			System.out.println(e);
 		}
+	}
+	
+	public ArrayList<String> getContent(){
+		return content;
 	}
 }

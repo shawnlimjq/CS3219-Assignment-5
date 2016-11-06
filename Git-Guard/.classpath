@@ -9,7 +9,6 @@
 	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="con" path="com.amazonaws.eclipse.sdk.AWS_JAVA_SDK"/>
 	<classpathentry kind="con" path="com.amazonaws.eclipse.lambda.AWS_LAMBDA_JAVA_CLASSPATH_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/Zenico/Documents/workspace/CS3219-Assignment-5/Git-Guard/javax.mail.jar"/>
-	<classpathentry kind="lib" path="/Users/Zenico/Documents/workspace/CS3219-Assignment-5/Git-Guard/json-simple.jar"/>
+	<classpathentry kind="lib" path="C:/Users/So/Documents/GitHub/CS3219-Assignment-5/Git-Guard/json-simple.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
