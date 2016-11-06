@@ -756,7 +756,6 @@ public class MainPage extends AnchorPane {
 			for(Map.Entry<String, Integer> dateEntry : commitCount.entrySet()){
     	    	String name = dateEntry.getKey();
     	    	int count = dateEntry.getValue();
-    	    	System.out.println(name+" " +count);
     	    	series.getData().add(new XYChart.Data<>(name, count));
     	    }
 			fileCommitHistory.getData().add(series);
@@ -780,6 +779,7 @@ public class MainPage extends AnchorPane {
 	private void displayLinesHistory(String filePath, int from, int to) {
 		// 0 is the latest commit
 		HashMap <String, Integer> authorChanges = new HashMap<String, Integer>();
+		XYChart.Series<String, Integer> lineSeries = new XYChart.Series<>();
 		for(int shaIndex =0 ; shaIndex < commitSHAS.size(); shaIndex++){
 			// Commit SHA
 			FileCommitParser fileCommitParser = new FileCommitParser(mainParser.getOldUrl(), commitSHAS.get(shaIndex));
@@ -863,12 +863,16 @@ public class MainPage extends AnchorPane {
 								}
 							}
 						}
-						
 						authorChanges.put(name, changes);
 					}
 				}
+				for(Map.Entry<String, Integer> authorEntry : authorChanges.entrySet()){
+	    	    	String nameEntry = authorEntry.getKey();
+	    	    	int count = authorEntry.getValue();
+	    	    	lineSeries.getData().add(new XYChart.Data<>(nameEntry, count));
+	    	    }
 				lineCommitHistory.setTitle("Commit History Per Team Member From Line " + from + " to " + to);
-				lineCommitHistory.setData((ObservableList<Series<String, Integer>>) authorChanges);
+				lineCommitHistory.getData().add(lineSeries);
 			}
 		}
 	}
