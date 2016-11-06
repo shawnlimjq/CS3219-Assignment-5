@@ -505,6 +505,7 @@ public class MainPage extends AnchorPane {
 		Series<String, Number> series = new XYChart.Series<>();
     	for (Map.Entry<String, HashMap<String, Integer>> committerEntry : committerCommits.entrySet()) {
     	    String committer = committerEntry.getKey();
+    	    series.setName(committer);
     	    HashMap<String, Integer> dateCount = committerEntry.getValue();
     	    
     	    /*for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
