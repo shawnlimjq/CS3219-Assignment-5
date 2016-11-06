@@ -614,7 +614,7 @@ public class MainPage extends AnchorPane {
 		        		if(innerJsonObj.get("type").equals("file")){
 		        			transferURL = initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString();
 							displayCommits(transferURL);
-							displayContent(transferURL);
+							displayContent((String) innerJsonObj.get("download_url"));
 						} else{
 							updateFileChooser(initPath+"/"+listViewFiles.getSelectionModel().getSelectedItem().toString());
 						}
@@ -675,12 +675,12 @@ public class MainPage extends AnchorPane {
 	}
 	
 	// Call this if select code chunk is clicked
-	private void displayContent(String fileURL){
+	private void displayContent(String downloadLink){
 		listViewLines.getItems().clear();
-		FileDownloader fileDownloader = new FileDownloader(fileURL);
+		FileDownloader fileDownloader = new FileDownloader(downloadLink);
 		fileDownloader.downloadFile();
 		
-		FileReader fileReader = new FileReader(fileURL);
+		FileReader fileReader = new FileReader(downloadLink.replace("https://", ""));
 		fileReader.readFile();
 		
 		ArrayList<String> content = fileReader.getContent();
