@@ -19,7 +19,7 @@ public class FileReader {
 	}
 	
 	public void readFile(){
-		content.clear();
+		content= new ArrayList<String>();
 		Path file = Paths.get(fileURL.replace("https://", ""));
 		try (
 			InputStream in = Files.newInputStream(file);
