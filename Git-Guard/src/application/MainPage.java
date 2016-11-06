@@ -141,8 +141,6 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private Tab tabD;
 	@FXML
-	private Tab tabE;
-	@FXML
 	private AnchorPane tabAAP;
 	@FXML
 	private AnchorPane tabBAP;
@@ -150,8 +148,6 @@ public class MainPage extends AnchorPane {
 	private AnchorPane tabCAP;
 	@FXML
 	private AnchorPane tabDAP;
-	@FXML
-	private AnchorPane tabEAP;
 	@FXML
 	private AnchorPane hiddenMenu;
 	@FXML
@@ -163,13 +159,9 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private ScrollPane tabDSP;
 	@FXML
-	private ScrollPane tabESP;
-	@FXML
 	private PieChart piechartA;
 	@FXML
 	private PieChart piechartLine;
-	@FXML
-	private BarChart<String, Integer> contributorChart;
 	@FXML
 	private BarChart<String, Integer> fileCommitHistory;
 	@FXML
@@ -261,7 +253,6 @@ public class MainPage extends AnchorPane {
 	public void initialise() {
 		//initialisePieColors();
 		initializeHiddenPanel();
-		contributorChart.setAnimated(false);
 		listViewLines.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		for(int i=0;i<24;i++){
 			notificationHours.getItems().add(i);
@@ -378,9 +369,8 @@ public class MainPage extends AnchorPane {
             public void handle(MouseEvent t) {
                 // Update UI here
             	updateTabB();
-            	// Use hashmap to populate histo
-            	// populateHisto();
             	populateScatter();
+            	contributorScatter.visibleProperty().set(true);
             }
         });
 		
@@ -436,35 +426,6 @@ public class MainPage extends AnchorPane {
 		});
 	}
 	
-	private void populateHisto(){
-		XYChart.Series<String, Integer> series = new XYChart.Series<>();
-    	contributorChart.getData().clear();
-    	for (Map.Entry<String, HashMap<String, Integer>> committerEntry : committerCommits.entrySet()) {
-    	    String committer = committerEntry.getKey();
-    	    HashMap<String, Integer> dateCount = committerEntry.getValue();
-    	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
-    	    	String date = dateEntry.getKey();
-    	    	int count = dateEntry.getValue();
-    	    	series.getData().add(new XYChart.Data<>(date, count));
-    	    }
-    	}
-    	contributorChart.getData().add(series);
-	}
-	
-	/*private void populateScatter(){
-		XYChart.Series<String, Integer> series = new XYChart.Series<>();
-    	for (Map.Entry<String, HashMap<String, Integer>> committerEntry : committerCommits.entrySet()) {
-    	    String committer = committerEntry.getKey();
-    	    HashMap<String, Integer> dateCount = committerEntry.getValue();
-    	    for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
-    	    	String date = dateEntry.getKey();
-    	    	int count = dateEntry.getValue();
-    	    	series.getData().add(new XYChart.Data<>(date, count));
-    	    }
-    	}
-    	contributorScatter.getData().add(series);
-	}*/
-	
 	private Date addDay(Date date){
 	    Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -498,24 +459,17 @@ public class MainPage extends AnchorPane {
 			e1.printStackTrace();
 		}
 		
-		//CategoryAxis dateXAxis = new CategoryAxis(dateXAxisList);
-		
-		//contributorScatter =  new ScatterChart<String,Number>(dateXAxis, new NumberAxis());
-		
 		Series<String, Number> series = new XYChart.Series<>();
     	for (Map.Entry<String, HashMap<String, Integer>> committerEntry : committerCommits.entrySet()) {
     	    String committer = committerEntry.getKey();
+			for (int i = 0; i < contributorScatter.getData().size(); i++) {
+				if (contributorScatter.getData().get(i).getName() == committer) {
+					contributorScatter.getData().remove(i);
+				}
+			}
     	    series.setName(committer);
     	    HashMap<String, Integer> dateCount = committerEntry.getValue();
-    	    
-    	    /*for(Map.Entry<String, Integer> dateEntry : dateCount.entrySet()){
-    	    	try {
-					m.put(new java.sql.Date(format.parse(dateEntry.getKey()).getTime()), dateEntry.getValue());
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    	    }*/
+    	 
 			for (int i = 0; i < dateXAxisList.size(); i++) {
 				if (dateCount.containsKey(dateXAxisList.get(i))) {
 					try {
