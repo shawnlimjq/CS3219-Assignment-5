@@ -798,99 +798,42 @@ public class MainPage extends AnchorPane {
 	
 	private void updateTabD(){
 		// Tab D
-		CommitParser commitParser = new CommitParser(mainParser.getOldUrl(), "", "", "");
-		noError = commitParser.parseURL();
+		StatsParser statsParser = new StatsParser(mainParser.getOldUrl());
+		noError = statsParser.parseURL();
 		checkError();
-		if(noError) {
-			// Contributor is key, value is number of lines for the committer
-			HashMap<String, Integer> contributorHm = new HashMap<String, Integer>();
-			// File path is key, value is line, author
-			HashMap<String, HashMap<String,String>> fileHm = new HashMap<String, HashMap<String,String>>(); 
-
-			ArrayList<String> SHAs = new ArrayList<String>();
-			ArrayList<String> contributors = new ArrayList<String>();
-			// Do something with the jsonArr, commit per day maybe. jsonArr.get(0) stands for the latest commit
-			String tempSHA = "";
-			int z = 0;
-			JSONArray jsonArr = commitParser.getJSONArr();
-			System.out.println(jsonArr.size());
-			do {
-				
-				jsonArr = commitParser.getJSONArr();
-				
-				for(int i = z ; i < jsonArr.size(); i++) {
-					// Consider more than 30 commits
-					JSONObject commitObj = (JSONObject) jsonArr.get(i);
-					tempSHA = (String) commitObj.get(SHA);
-					JSONObject authorObj = (JSONObject) ((JSONObject) commitObj.get(COMMIT)).get(AUTHOR);
-					contributors.add((String) authorObj.get(NAME));
-					SHAs.add(tempSHA);
-				}
-				
-				if(jsonArr.size() == 30){
-					commitParser.setSHA(tempSHA);
-					noError = commitParser.parseURL();
-					checkError();
-					z = 1;
-				}
-			} while(jsonArr.size() == 30 && noError);
+		
+		if(noError){
+			// Update UI with parser's JSONArray
+			JSONArray jsonArr = statsParser.getJSONArr();
+			// TODO : update accordingly
+			dList.clear();
+			piechartLine.setData(dList);
 			
-			for(int i = SHAs.size()-1 ; i > -1; i--){
-				
-				FileCommitParser fileCommitParser = new FileCommitParser(mainParser.getOldUrl(), SHAs.get(i));
-				noError = fileCommitParser.parseURL();
-				checkError();
-				if(noError){
-					
-					JSONObject jsonFileObj = fileCommitParser.getJSONObj();
-					JSONArray files = (JSONArray) jsonFileObj.get(FILES);
-					
-					for(int j = 0 ; j < files.size(); j++){
-						
-						JSONObject file = (JSONObject) files.get(j);
-						String line = (String) file.get(PATCH);
-						String filename = (String) file.get(FILENAME);
-						String [] lines = line.split("\n");
-						
-						for(int k = 0 ; k < lines.length; k++){
-							System.out.println(lines[k]);
-							if(lines[k].charAt(0) == '-'){
-								
-								HashMap<String, String> temp = fileHm.get(filename);
-								lines[k] = "+" + lines[k].substring(1);
-								temp.remove(lines[k]);
-								
-								// This condition should run everytime
-								if(contributorHm.containsKey(contributors.get(i))){
-									 int count = contributorHm.get(contributors.get(i)) - 1;
-									 contributorHm.put(contributors.get(i), count);
-								}
-								
-							} else if (lines[k].charAt(0) == '+'){
-								
-								HashMap<String, String> temp = fileHm.get(filename);
-								temp.put(lines[k], contributors.get(i));
-								fileHm.put(filename, temp);
-								int count = 1;
-								if(contributorHm.containsKey(contributors.get(i))){
-									 count = contributorHm.get(contributors.get(i)) + 1;
-								}
-								
-								contributorHm.put(contributors.get(i), count);
-							}
-						}
-					}
+			//Use this to add data to piechart. FOR each author
+			for(int i =0 ; i< jsonArr.size(); i++){
+	
+				JSONObject innerJsonObj = (JSONObject) jsonArr.get(i);
+				JSONArray weeksArr = (JSONArray) innerJsonObj.get(WEEKS);
+				long addition = 0;
+				long deletion = 0;
+				for(int z = 0 ; z < weeksArr.size(); z++){
+					JSONObject weekObj = (JSONObject) weeksArr.get(z);
+					addition += (long) (weekObj.get(ADDITION));
+					deletion += (long) (weekObj.get(DELETION));
 				}
+				
+				JSONObject authorObj = (JSONObject) innerJsonObj.get(AUTHOR);
+				
+				// TODO : shawn uncomment this and replace the list Tab D
+				dList.add(new PieChart.Data((String) authorObj.get(LOGIN), addition - deletion));
 			}
-			
-			for (Map.Entry<String, Integer> entry : contributorHm.entrySet()) {
-			    String key = entry.getKey();
-			    int value = entry.getValue();
-			    dList.add(new PieChart.Data(key, value));
-			}
-			
-			dList.forEach(data -> data.nameProperty().bind(Bindings.concat(data.getName(), "-", data.pieValueProperty(), " Lines")));
-			
+			dList.forEach(data ->
+            data.nameProperty().bind(
+                    Bindings.concat(
+                            data.getName(), "-", data.pieValueProperty(), " Lines"
+                    )
+            )
+    );
 		}
 	}
 	
