@@ -736,13 +736,14 @@ public class MainPage extends AnchorPane {
 
 			for(int i = 0 ; i< jsonArr.size(); i++){
 				JSONObject commitObj = (JSONObject) jsonArr.get(i);
+				String sha = (String) commitObj.get(SHA);
 				commitObj = (JSONObject) commitObj.get(COMMIT);
 				JSONObject committerObj = (JSONObject) commitObj.get(AUTHOR);
 				
 				String msg = (String) commitObj.get(MESSAGE);
 				String date = (String) committerObj.get(DATE);
 				String name = (String) committerObj.get(NAME);
-				String sha = (String) committerObj.get(SHA);
+			
 				commitSHAS.add(sha);
 				// Show MSG , date , committer 
 				// TODO : update UI with this 3 data
@@ -816,29 +817,48 @@ public class MainPage extends AnchorPane {
 							changes = authorChanges.get(name);
 						}
 						
+						
 						if(from <= startAddMax){
-							for (int z = 1 ; z < lines.length ; z++){
+							
+							ArrayList<String> addLines = new ArrayList<String>();
+							
+							for(int a = 0 ; a < lines.length ; a++){
+								if(lines[a].charAt(0) != '-'){
+									addLines.add(lines[a]);
+								}
+							}
+							
+							for (int z = 1 ; z < addLines.size(); z++){
 								
 								// Filter out lines more than to
 								if(startAdd + z - 1 > to) {
 									break;
 								}
 								
-								if(lines[z].charAt(0) == '+' && startAdd + z - 1 >= from){
+								if(addLines.get(z).charAt(0) == '+' && startAdd + z - 1 >= from){
 									changes += 1;
 								}
 							}
 						}
 						
 						if(from <= startDelMax){
-							for (int z = 1 ; z < lines.length ; z++){
+							
+							ArrayList<String> delLines = new ArrayList<String>();
+							
+							for(int a = 0 ; a < lines.length ; a++){
+								if(lines[a].charAt(0) != '+'){
+									delLines.add(lines[a]);
+								}
+							}
+							
+							for (int z = 1 ; z < delLines.size() ; z++){
 	
 								// Filter out lines more than to
 								if(startDel + z - 1 > to){
 									break;
 								}
 								
-								if(lines[z].charAt(0) == '-'  && startDel + z - 1 >= from){
+								if(delLines.get(z).charAt(0) == '-'  && startDel + z - 1 >= from){
 									changes += 1;
 								}
 							}
