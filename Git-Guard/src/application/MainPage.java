@@ -809,7 +809,7 @@ public class MainPage extends AnchorPane {
 					JSONObject jsonFile = (JSONObject) jsonFiles.get(i);
 					String filename = (String) jsonFile.get(FILENAME);
 					// TODO: Add Exception handling
-					if(filename.equals(filePath.substring(filePath.lastIndexOf("/") + 1))){
+					if(filename.substring(filename.lastIndexOf("/") + 1).equals(filePath.substring(filePath.lastIndexOf("/") + 1))){
 						// Do something with the patch if it's the file
 						// @@ -0,0 +1,19 @@
 						String patch = (String) jsonFile.get(PATCH);
