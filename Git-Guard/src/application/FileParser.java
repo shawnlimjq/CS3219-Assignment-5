@@ -13,6 +13,6 @@ public class FileParser extends Parser {
 	private void convertToAPIURL(){
 		// From : https://github.com/{username}/{repo name}
         // To : https://api.github.com/repos/{username}/{repo name}/contents
-		setUrl(getUrl()  + "/contents" + path);
+		setUrl(getUrl()  + "/contents" +path+ MainPage.KEY);
 	}
 }

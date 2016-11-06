@@ -35,8 +35,8 @@ public class CommitParser extends Parser {
 		if(!path.equals("")){
 			tempPath = "&path=" + path;
 		}
-		
-		setUrl(getUrl()  + "/commits?" + tempAuthor + tempSince + tempPath);
+		System.out.println(getUrl()  + "/commits?" + tempAuthor + tempSince + tempPath + "&" +MainPage.KEY.substring(1));
+		setUrl(getUrl()  + "/commits?" + tempAuthor + tempSince + tempPath + "&" +MainPage.KEY.substring(1));
 	}
 	
 	public void setSHA(String SHA){
