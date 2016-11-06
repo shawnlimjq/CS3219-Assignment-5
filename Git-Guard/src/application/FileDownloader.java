@@ -1,5 +1,6 @@
 package application;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -30,6 +31,7 @@ public class FileDownloader {
 				String saveFilePath = fileURL.replace("https://", "");
 			 
 				// opens an output stream to save into file
+				new File(saveFilePath.substring(0, saveFilePath.lastIndexOf("/"))).mkdirs();
 	            FileOutputStream outputStream = new FileOutputStream(saveFilePath);
 		 
 	            int bytesRead = -1;
@@ -48,7 +50,7 @@ public class FileDownloader {
 			}
 			httpConn.disconnect();
 		} catch (Exception e){
-			System.out.println("Failed to download");
+			System.out.println(e);
 		}
 	}
 }

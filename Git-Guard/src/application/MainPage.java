@@ -689,7 +689,7 @@ public class MainPage extends AnchorPane {
 		FileDownloader fileDownloader = new FileDownloader(downloadLink);
 		fileDownloader.downloadFile();
 		
-		FileReader fileReader = new FileReader(downloadLink.replace("https://", ""));
+		FileReader fileReader = new FileReader(downloadLink);
 		fileReader.readFile();
 		
 		ArrayList<String> content = fileReader.getContent();
