@@ -114,6 +114,8 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private Label notifyTitle;
 	@FXML
+	private Label notificationError;
+	@FXML
 	private TextField githubRepoInput;
 	@FXML
 	private ChoiceBox notificationHours;
