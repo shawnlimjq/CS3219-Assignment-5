@@ -119,6 +119,8 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private Label notifyTitle;
 	@FXML
+	private Label notiHelp;
+	@FXML
 	private Label notificationFeedback;
 	@FXML
 	private TextField githubRepoInput;
@@ -322,6 +324,7 @@ public class MainPage extends AnchorPane {
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().equals(KeyCode.ENTER)) {
 					// Testing link - https://github.com/ymymym/MaterialDateTimePicker
+					notiHelp.setVisible(true);
 					mainParser = new Parser(githubRepoInput.getText());
 					noError = mainParser.parseURL();
 					checkError();
