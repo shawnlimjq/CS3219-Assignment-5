@@ -36,7 +36,7 @@
                     <content>
                       <AnchorPane fx:id="tabAAP" minHeight="0.0" minWidth="0.0" prefHeight="564.0" prefWidth="1034.0">
                            <children>
-                              <PieChart fx:id="piechartA" layoutX="42.0" layoutY="21.0" prefHeight="529.0" prefWidth="971.0" />
+                              <PieChart fx:id="piechartA" layoutX="42.0" layoutY="21.0" prefHeight="529.0" prefWidth="971.0" title="Number of Commits for All Team Members" />
                            </children>
                         </AnchorPane>
                     </content>
@@ -52,15 +52,7 @@
                               <DatePicker fx:id="startDate" layoutX="452.0" layoutY="25.0" promptText="Start Date" />
                               <ChoiceBox fx:id="contributorChoice" layoutX="122.0" layoutY="25.0" prefWidth="150.0" />
                               <Button fx:id="addBtn" layoutX="849.0" layoutY="25.0" mnemonicParsing="false" text="Add" />
-                              <BarChart fx:id="contributorChart" animated="false" layoutX="289.0" layoutY="116.0" visible="false">
-                                <xAxis>
-                                  <CategoryAxis side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis side="LEFT" />
-                                </yAxis>
-                              </BarChart>
-                              <ScatterChart fx:id="contributorScatter" animated="false" layoutX="29.0" layoutY="104.0" prefHeight="400.0" prefWidth="978.0">
+                              <ScatterChart fx:id="contributorScatter" animated="false" layoutX="29.0" layoutY="104.0" prefHeight="400.0" prefWidth="978.0" visible="false">
                                 <xAxis>
                                   <CategoryAxis side="BOTTOM" />
                                 </xAxis>
@@ -142,15 +134,6 @@
                   </ScrollPane>
                </content>
             </Tab>
-            <Tab text="Tab E">
-               <content>
-                  <ScrollPane fx:id="tabESP" prefHeight="200.0" prefWidth="200.0">
-                    <content>
-                      <AnchorPane fx:id="tabEAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1035.0" />
-                    </content>
-                  </ScrollPane>
-               </content>
-            </Tab>
         </tabs>
       </TabPane>
       <Label fx:id="errorLabel" layoutX="45.0" layoutY="113.0" text="Unable to parse URL! Repo might be private or it doesn't exist!" textFill="RED" visible="false" />
@@ -163,7 +146,7 @@
                   <Font name="System Bold" size="15.0" />
                </font>
             </Label>
-            <ChoiceBox fx:id="notificationDayDay" layoutX="114.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0"/>
+             <ChoiceBox fx:id="notificationDayDay" layoutX="114.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0"/>
             <ChoiceBox fx:id="notificationDayHour" layoutX="165.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0" />
             <ChoiceBox fx:id="notificationDayMin" layoutX="216.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0" />
             <ChoiceBox fx:id="notificationHours" layoutX="114.0" layoutY="201.0" prefHeight="25.0" prefWidth="150.0" />
