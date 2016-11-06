@@ -23,8 +23,8 @@ public class CloudWatchConnector {
 	private AmazonCloudWatchEventsClient client;
 	private AWSLambdaClient lambdaClient;
 	
-	private static final String lambdaName = "Hello";
-	private static final String lambdaARN = "arn:aws:lambda:ap-southeast-1:181848607663:function:Hello";
+	private static final String lambdaName = "sendNotification";
+	private static final String lambdaARN = "arn:aws:lambda:ap-southeast-1:181848607663:function:sendNotification";
 	
 	
 	public CloudWatchConnector(){
