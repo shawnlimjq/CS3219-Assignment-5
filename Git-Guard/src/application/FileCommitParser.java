@@ -14,6 +14,6 @@ public class FileCommitParser extends Parser {
 	private void convertToAPIURL(){
 		// From : https://github.com/{username}/{repo name}
         // To : https://api.github.com/repos/{username}/{repo name}/commits/{SHA}
-		setUrl(getUrl()  + "/commits/" + SHA);
+		setUrl(getUrl()  + "/commits/" + SHA + MainPage.KEY);
 	}
 }

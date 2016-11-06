@@ -36,7 +36,11 @@ public class Parser {
 		try{
 			
 		    URL buildUrl = new URL(url);
-
+		    
+		    if(!(this instanceof ContriParser && this instanceof CommitParser && this instanceof FileParser && this instanceof FileCommitParser)){
+		    	buildUrl = new URL(url + MainPage.KEY);
+		    } 
+		    
 		    JSONParser parser = new JSONParser();
 		    // read from the URL
 		    Scanner scan = new Scanner(buildUrl.openStream());

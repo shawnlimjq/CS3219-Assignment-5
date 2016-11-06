@@ -87,6 +87,9 @@ public class MainPage extends AnchorPane {
 	private static final String FILENAME = "filename";
 	private static final String PATCH = "patch";
 	
+	// For API restriction
+	public static final String KEY = "?client_id=0e25b82fb6751964e282&client_secret=0ba2d2024e11b25b5d05bba22f54c87ae4dbc517";
+	
 	TranslateTransition openPanel;
 	TranslateTransition closePanel;
 	private static final int TRANSITION_TIME = 350;

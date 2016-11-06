@@ -10,6 +10,6 @@ public class ContriParser extends Parser {
 	private void convertToAPIURL(){
 		// From : https://github.com/{username}/{repo name}
         // To : https://api.github.com/repos/{username}/{repo name}/contributors
-		setUrl(getUrl() + "/contributors");
+		setUrl(getUrl() + "/contributors" + MainPage.KEY);
 	}
 }
