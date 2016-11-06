@@ -77,14 +77,14 @@
                     <content>
                       <AnchorPane fx:id="tabCAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1035.0">
                            <children>
-                              <ListView fx:id="listViewFiles" layoutX="28.0" layoutY="25.0" prefHeight="524.0" prefWidth="200.0" />
-                              <TabPane fx:id="tabCTabPane" layoutX="228.0" layoutY="25.0" prefHeight="538.0" prefWidth="806.0" tabClosingPolicy="UNAVAILABLE">
+                              <ListView fx:id="listViewFiles" layoutX="28.0" layoutY="25.0" prefHeight="539.0" prefWidth="200.0" />
+                              <TabPane fx:id="tabCTabPane" disable="true" layoutX="228.0" layoutY="25.0" prefHeight="538.0" prefWidth="806.0" tabClosingPolicy="UNAVAILABLE" visible="false">
                                 <tabs>
                                   <Tab fx:id="tabCTabA" text="Commit History For File">
                                     <content>
                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                              <children>
-                                                <BarChart fx:id="fileCommitHistory" layoutX="21.0" layoutY="13.0" prefHeight="489.0" prefWidth="774.0">
+                                                <BarChart fx:id="fileCommitHistory" animated="false" layoutX="21.0" layoutY="13.0" prefHeight="489.0" prefWidth="774.0">
                                                   <xAxis>
                                                     <CategoryAxis side="BOTTOM" />
                                                   </xAxis>
@@ -105,11 +105,11 @@
                                           </AnchorPane>
                                     </content>
                                   </Tab>
-                                    <Tab fx:id="tabCTabC" text="Commit History For Selected Line">
+                                    <Tab fx:id="tabCTabC" disable="true" text="Commit History For Selected Line">
                                       <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                              <children>
-                                                <BarChart fx:id="lineCommitHistory" layoutX="7.0" prefHeight="509.0" prefWidth="801.0">
+                                                <BarChart fx:id="lineCommitHistory" animated="false" layoutX="7.0" prefHeight="509.0" prefWidth="801.0">
                                                   <xAxis>
                                                     <CategoryAxis side="BOTTOM" />
                                                   </xAxis>
