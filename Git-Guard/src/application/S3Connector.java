@@ -5,6 +5,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Date;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -68,11 +73,43 @@ public class S3Connector {
 		}
 	}
 	
+	public Object loadFile(String fileName) {
+		Object myObject = null;
+		try {
+			String pathName = folderName + SUFFIX + fileName;
+			
+			if (s3client.doesObjectExist(bucketName, pathName)) {
+				S3Object object = s3client.getObject(new GetObjectRequest(bucketName, pathName));
+			    InputStream stream = object.getObjectContent();
+			    ObjectInputStream oiStream = new ObjectInputStream(stream);
+			    
+			    myObject = oiStream.readObject();
+			    
+			    // close resource even during exception
+			    stream.close();
+			    oiStream.close();
+			    
+			} else {
+				System.out.println("No existing " + fileName + ", creating new " + fileName + " file..");
+			}
+		    
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AmazonS3Exception e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			return myObject;
+		}
+	}
+	
 	public void uploadFile(String fileName) {
 		String pathName = folderName + SUFFIX + fileName;
 		s3client.putObject(new PutObjectRequest(bucketName, pathName, 
 				new File(fileName))
 				.withCannedAcl(CannedAccessControlList.PublicRead));
 	}
-	
 }
