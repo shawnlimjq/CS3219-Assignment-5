@@ -341,6 +341,9 @@ public class MainPage extends AnchorPane {
 						loadA = false;
 						loadB = false;
 						piechartA.visibleProperty().set(true);
+						contributors.clear();
+						contributorScatter.getData().clear();
+						contributorScatter.setVisible(false);
 
 						jsonObj= mainParser.getJSONObj();
 						mainTabPane.visibleProperty().set(true);
