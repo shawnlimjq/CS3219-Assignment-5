@@ -1076,6 +1076,11 @@ public class MainPage extends AnchorPane {
 	                                    setDisable(true);
 	                                    setStyle("-fx-background-color: #ffc0cb;");
 	                            }   
+	                            if (item.isAfter(LocalDate.now())
+		                                ) {
+		                                    setDisable(true);
+		                                    setStyle("-fx-background-color: #ffc0cb;");
+		                            }   
 	                    }
 	                };
 	            }
