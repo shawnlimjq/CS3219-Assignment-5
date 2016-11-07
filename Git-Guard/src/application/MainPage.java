@@ -1045,7 +1045,7 @@ public class MainPage extends AnchorPane {
 				}
 				
 				if(jsonArr.size() == 30){
-					commitParser.setSHA(tempSHA);
+					commitParser = new CommitParser(mainParser.getOldUrl(), committerName, formattedDate, "", tempSHA);
 					noError = commitParser.parseURL();
 					checkError();
 					z = 1;
