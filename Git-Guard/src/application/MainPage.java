@@ -32,9 +32,13 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
@@ -90,6 +94,7 @@ public class MainPage extends AnchorPane {
 	private static final String FILES = "files";
 	private static final String FILENAME = "filename";
 	private static final String PATCH = "patch";
+	private final Glow glow = new Glow(.8);
 	
 	// For API restriction
 	public static final String KEY = "?client_id=0e25b82fb6751964e282&client_secret=0ba2d2024e11b25b5d05bba22f54c87ae4dbc517";
@@ -116,6 +121,8 @@ public class MainPage extends AnchorPane {
 	
 	@FXML
 	private Label gitGuardLabel;
+	@FXML
+	private Label dataLabel;
 	@FXML
 	private Label errorLabel;
 	@FXML
@@ -187,7 +194,7 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private PieChart fileCommitHistory;
 	@FXML
-	private PieChart lineCommitHistory;
+	private StackedBarChart lineCommitHistory;
 	@FXML
 	private ScatterChart<String, Number> contributorScatter;
 	@FXML
@@ -313,6 +320,7 @@ public class MainPage extends AnchorPane {
 							lineTo=i;
 						}
 					}
+					lineCommitHistory.getData().clear();
 					displayLinesHistory(transferURL,lineFrom+1,lineTo+1);
 				}
 			}
@@ -349,11 +357,13 @@ public class MainPage extends AnchorPane {
 						contributorScatter.setVisible(false);
 						tabCTabC.disableProperty().set(true);
 						tabCTabPane.setVisible(false);
+						lineCommitHistory.getData().clear();
 
 						jsonObj= mainParser.getJSONObj();
 						mainTabPane.visibleProperty().set(true);
 						mainTabPane.disableProperty().set(false);
 						mainTabPane.getSelectionModel().select(tabA);
+						
 						initTabA();
 						loadA = true;
 						
@@ -692,6 +702,7 @@ public class MainPage extends AnchorPane {
 							JSONObject innerJsonObj = (JSONObject) jsonArr
 									.get(listViewFiles.getSelectionModel().getSelectedIndex());
 							if (innerJsonObj.get("type").equals("file")) {
+								tabCTabPane.getSelectionModel().select(tabCTabA);
 								tabCTabPane.disableProperty().set(false);
 								tabCTabPane.visibleProperty().set(true);
 								transferURL = initPath + "/"
@@ -709,6 +720,7 @@ public class MainPage extends AnchorPane {
 								JSONObject innerJsonObj = (JSONObject) jsonArr
 										.get(listViewFiles.getSelectionModel().getSelectedIndex() - 1);
 								if (innerJsonObj.get("type").equals("file")) {
+									tabCTabPane.getSelectionModel().select(tabCTabA);
 									tabCTabPane.disableProperty().set(false);
 									tabCTabPane.visibleProperty().set(true);
 									transferURL = initPath + "/"
@@ -796,9 +808,13 @@ public class MainPage extends AnchorPane {
 	
 	private void displayLinesHistory(String filePath, int from, int to) {
 		tabCTabPane.getSelectionModel().select(tabCTabC);
+	     final XYChart.Series<String, Number> series =
+	             new XYChart.Series<String, Number>();
+	     final XYChart.Series<String, Number> series1 =
+	             new XYChart.Series<String, Number>();
 		// 0 is the latest commit
-		lineCommitHistoryList.clear();
-		lineCommitHistory.setData(lineCommitHistoryList);
+		//lineCommitHistoryList.clear();
+		//lineCommitHistory.setData(lineCommitHistoryList);
 		// Key : name, Value : addition, deletion
 		HashMap <String, Pair<Integer,Integer>> authorChanges = new HashMap<String,  Pair<Integer,Integer>>();
 		for(int shaIndex =0 ; shaIndex < commitSHAS.size(); shaIndex++){
@@ -905,13 +921,39 @@ public class MainPage extends AnchorPane {
 	    	String nameEntry = authorEntry.getKey();
 	    	int addition = authorEntry.getValue().getKey();
 	    	int deletion = authorEntry.getValue().getValue();
-	    	// lineCommitHistoryList.add(new PieChart.Data(nameEntry, count));
-	    	// Shawn, change to stacked bar chart! addition below deletion on top. paiseh -> http://docs.oracle.com/javafx/2/charts/bar-chart.htm
+	    	series.getData().add(new XYChart.Data<String, Number>(nameEntry, addition));
+	    	series1.getData().add(new XYChart.Data<String, Number>(nameEntry, deletion));
 	    }
+		series.setName("Addition(s)");
+		series1.setName("Deletion(s)");
 		lineCommitHistory.setTitle("Commit History Per Team Member From Line " + from + " to " + to);
-		lineCommitHistoryList.forEach(data -> data.nameProperty()
-				.bind(Bindings.concat(data.getName(), "-", data.pieValueProperty(), " Commits")));
+		lineCommitHistory.getData().addAll(series, series1);
+		setupHover(series);
+		setupHover(series1);
 		
+	}
+
+	private void setupHover(XYChart.Series<String, Number> series) {
+	    for (final XYChart.Data<String, Number> dt : series.getData()) {
+	        final Node n = dt.getNode();
+
+	        n.setEffect(null);
+	        n.setOnMouseEntered(new EventHandler<MouseEvent>() {
+	            @Override
+	            public void handle(MouseEvent e) {
+	                n.setEffect(glow);
+	                dataLabel.setText(dt.getXValue() + " : " + dt.getYValue() + " " + series.getName());
+	                dataLabel.setVisible(true);
+	            }
+	        });
+	        n.setOnMouseExited(new EventHandler<MouseEvent>() {
+	            @Override
+	            public void handle(MouseEvent e) {
+	                n.setEffect(null);
+	                dataLabel.setVisible(false);
+	            }
+	        });
+	    }
 	}
 	
 	private void updateTabD(){
