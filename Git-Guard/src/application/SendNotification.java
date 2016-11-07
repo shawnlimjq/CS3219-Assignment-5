@@ -2,6 +2,8 @@ package application;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +14,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.amazonaws.services.identitymanagement.model.User;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
@@ -34,6 +35,8 @@ public class SendNotification implements RequestHandler<String, String> {
     // The port you will connect to on the Amazon SES SMTP endpoint. We are choosing port 25 because we will use
     // STARTTLS to encrypt the connection.
     static final int PORT = 25;
+    
+    private static final S3Connector s3client = new S3Connector("cs3219.ass5", "ass5_data");
 	
     @Override
     public String handleRequest(String input, Context context) {
@@ -105,10 +108,11 @@ public class SendNotification implements RequestHandler<String, String> {
     	FROM = strArray[0];
     	TO = strArray[1];
     	String repo = strArray[2].substring(19);
-    	long time = Long.parseLong(strArray[3]);
     	long currentTime = new Date().getTime();
     	
-    	
+    	Map<String, Date> lastCheckTime = (HashMap<String, Date>) s3client.loadFile("time.properties");
+		long time = lastCheckTime.get(strArray[2]).getTime();
+    
     	SUBJECT = String.format(SUBJECT, repo);
     	BODY = "User last ran GIT-Guard \n" + getDurationBreakdown(currentTime - time);
     	
