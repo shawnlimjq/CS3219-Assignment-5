@@ -428,6 +428,7 @@ public class MainPage extends AnchorPane {
             	updateTabB();
             	populateScatter();
             	contributorScatter.visibleProperty().set(true);
+            	startDate.setDisable(true);
             }
         });
 		
@@ -650,6 +651,7 @@ public class MainPage extends AnchorPane {
 	private void initTabB(){
 		// Tab B
 		if(noError){
+			startDate.setDisable(false);
 			JSONObject sourceObj = (JSONObject) jsonObj.get(SOURCE);
 			if(sourceObj!=null){
 				disableDate((String) sourceObj.get(CREATED_AT));
@@ -663,6 +665,7 @@ public class MainPage extends AnchorPane {
 	private void initTabC(){
 		// Tab C
 		updateFileChooser("");
+		
 	}
 	
 	// Keep going in this method if file or directory clicked
@@ -848,7 +851,7 @@ public class MainPage extends AnchorPane {
 						int startDel = Integer.parseInt(addDelete[0].split(",")[0].substring(1)); 
 					    int startDelMax = startAdd + Integer.parseInt(addDelete[0].split(",")[1]) - 1;
 						
-						String [] lines = patch.replace("\n\\ No newline at end of file", "").split("\n");
+						String [] lines = patch.split("\n");
 						String header = lines[0];
 						
 						int addition = 0;
