@@ -43,7 +43,7 @@ public class Data {
 			
 			FileOutputStream timeFileOut = new FileOutputStream(timeFile);
 			ObjectOutputStream timeOut = new ObjectOutputStream(timeFileOut);
-			timeOut.writeObject(dataSet);
+			timeOut.writeObject(lastCheckTime);
 			
 			s3client.uploadFile(dataFile.getName());
 			s3client.uploadFile(timeFile.getName());
