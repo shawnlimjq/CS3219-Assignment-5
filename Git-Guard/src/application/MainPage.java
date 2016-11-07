@@ -846,7 +846,7 @@ public class MainPage extends AnchorPane {
 						int startDel = Integer.parseInt(addDelete[0].split(",")[0].substring(1)); 
 					    int startDelMax = startAdd + Integer.parseInt(addDelete[0].split(",")[1]) - 1;
 						
-						String [] lines = patch.split("\n");
+						String [] lines = patch.replace("\n\\ No newline at end of file", "").split("\n");
 						String header = lines[0];
 						
 						int addition = 0;
