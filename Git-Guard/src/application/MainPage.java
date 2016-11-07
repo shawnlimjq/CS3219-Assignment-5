@@ -791,7 +791,8 @@ public class MainPage extends AnchorPane {
 		// 0 is the latest commit
 		lineCommitHistoryList.clear();
 		lineCommitHistory.setData(lineCommitHistoryList);
-		HashMap <String, Integer> authorChanges = new HashMap<String, Integer>();
+		// Key : name, Value : addition, deletion
+		HashMap <String, Pair<Integer,Integer>> authorChanges = new HashMap<String,  Pair<Integer,Integer>>();
 		for(int shaIndex =0 ; shaIndex < commitSHAS.size(); shaIndex++){
 			// Commit SHA
 			FileCommitParser fileCommitParser = new FileCommitParser(mainParser.getOldUrl(), commitSHAS.get(shaIndex));
@@ -823,10 +824,15 @@ public class MainPage extends AnchorPane {
 						
 						String [] lines = patch.split("\n");
 						String header = lines[0];
-						int changes = 0 ;
+						
+						int addition = 0;
+						int deletion = 0;
+						Pair<Integer,Integer> changes = new Pair<Integer, Integer>(addition, deletion);
 						
 						if(authorChanges.containsKey(name)){
 							changes = authorChanges.get(name);
+							addition = changes.getKey();
+							deletion = changes.getValue();
 						}
 						
 						
@@ -848,7 +854,7 @@ public class MainPage extends AnchorPane {
 								}
 								
 								if(addLines.get(z).charAt(0) == '+' && startAdd + z - 1 >= from){
-									changes += 1;
+									addition += 1;
 								}
 							}
 						}
@@ -871,24 +877,32 @@ public class MainPage extends AnchorPane {
 								}
 								
 								if(delLines.get(z).charAt(0) == '-'  && startDel + z - 1 >= from){
-									changes += 1;
+									deletion += 1;
 								}
 							}
 						}
+						
+						changes = new Pair<Integer,Integer>(addition,deletion);
 						authorChanges.put(name, changes);
+						// 1 commit only has at most 1 file. Break to optimize
+						break;
 					}
 				}
 				
-				for(Map.Entry<String, Integer> authorEntry : authorChanges.entrySet()){
-	    	    	String nameEntry = authorEntry.getKey();
-	    	    	int count = authorEntry.getValue();
-	    	    	lineCommitHistoryList.add(new PieChart.Data(nameEntry, count));
-	    	    }
-				lineCommitHistory.setTitle("Commit History Per Team Member From Line " + from + " to " + to);
-				lineCommitHistoryList.forEach(data -> data.nameProperty()
-						.bind(Bindings.concat(data.getName(), "-", data.pieValueProperty(), " Commits")));
+				
 			}
 		}
+		
+		for(Map.Entry<String, Pair<Integer,Integer>> authorEntry : authorChanges.entrySet()){
+	    	String nameEntry = authorEntry.getKey();
+	    	int addition = authorEntry.getValue().getKey();
+	    	int deletion = authorEntry.getValue().getValue();
+	    	// lineCommitHistoryList.add(new PieChart.Data(nameEntry, count));
+	    	// Shawn, change to stacked bar chart! addition below deletion on top. paiseh -> http://docs.oracle.com/javafx/2/charts/bar-chart.htm
+	    }
+		lineCommitHistory.setTitle("Commit History Per Team Member From Line " + from + " to " + to);
+		lineCommitHistoryList.forEach(data -> data.nameProperty()
+				.bind(Bindings.concat(data.getName(), "-", data.pieValueProperty(), " Commits")));
 		
 	}
 	
