@@ -10,6 +10,7 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -34,7 +35,7 @@
                     <content>
                       <AnchorPane fx:id="tabAAP" minHeight="0.0" minWidth="0.0" prefHeight="564.0" prefWidth="1034.0">
                            <children>
-                              <PieChart fx:id="piechartA" layoutX="42.0" layoutY="21.0" prefHeight="529.0" prefWidth="971.0" />
+                              <PieChart fx:id="piechartA" layoutX="42.0" layoutY="21.0" prefHeight="529.0" prefWidth="971.0" title="Number of Commits for All Team Members" visible="false" />
                            </children>
                         </AnchorPane>
                     </content>
@@ -50,15 +51,7 @@
                               <DatePicker fx:id="startDate" layoutX="452.0" layoutY="25.0" promptText="Start Date" />
                               <ChoiceBox fx:id="contributorChoice" layoutX="122.0" layoutY="25.0" prefWidth="150.0" />
                               <Button fx:id="addBtn" layoutX="849.0" layoutY="25.0" mnemonicParsing="false" text="Add" />
-                              <BarChart fx:id="contributorChart" animated="false" layoutX="289.0" layoutY="116.0" visible="false">
-                                <xAxis>
-                                  <CategoryAxis side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis side="LEFT" />
-                                </yAxis>
-                              </BarChart>
-                              <ScatterChart fx:id="contributorScatter" animated="false" layoutX="29.0" layoutY="104.0" prefHeight="400.0" prefWidth="978.0">
+                              <ScatterChart fx:id="contributorScatter" animated="false" layoutX="29.0" layoutY="104.0" prefHeight="400.0" prefWidth="978.0" title="Commits History Per Day By Each Member" visible="false">
                                 <xAxis>
                                   <CategoryAxis side="BOTTOM" />
                                 </xAxis>
@@ -77,14 +70,14 @@
                     <content>
                       <AnchorPane fx:id="tabCAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1035.0">
                            <children>
-                              <ListView fx:id="listViewFiles" layoutX="28.0" layoutY="25.0" prefHeight="524.0" prefWidth="200.0" />
-                              <TabPane fx:id="tabCTabPane" layoutX="228.0" layoutY="25.0" prefHeight="538.0" prefWidth="806.0" tabClosingPolicy="UNAVAILABLE">
+                              <ListView fx:id="listViewFiles" layoutX="28.0" layoutY="25.0" prefHeight="539.0" prefWidth="200.0" />
+                              <TabPane fx:id="tabCTabPane" disable="true" layoutX="228.0" layoutY="25.0" prefHeight="538.0" prefWidth="806.0" tabClosingPolicy="UNAVAILABLE" visible="false">
                                 <tabs>
                                   <Tab fx:id="tabCTabA" text="Commit History For File">
                                     <content>
                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                              <children>
-                                                <BarChart fx:id="fileCommitHistory" layoutX="21.0" layoutY="13.0" prefHeight="489.0" prefWidth="774.0">
+                                                <BarChart fx:id="fileCommitHistory" animated="false" layoutX="21.0" layoutY="13.0" prefHeight="489.0" prefWidth="774.0">
                                                   <xAxis>
                                                     <CategoryAxis side="BOTTOM" />
                                                   </xAxis>
@@ -105,11 +98,11 @@
                                           </AnchorPane>
                                     </content>
                                   </Tab>
-                                    <Tab fx:id="tabCTabC" text="Commit History For Selected Line">
+                                    <Tab fx:id="tabCTabC" disable="true" text="Commit History For Selected Line">
                                       <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                              <children>
-                                                <BarChart fx:id="lineCommitHistory" layoutX="7.0" prefHeight="509.0" prefWidth="801.0">
+                                                <BarChart fx:id="lineCommitHistory" animated="false" layoutX="7.0" prefHeight="509.0" prefWidth="801.0">
                                                   <xAxis>
                                                     <CategoryAxis side="BOTTOM" />
                                                   </xAxis>
@@ -134,17 +127,8 @@
                     <content>
                       <AnchorPane fx:id="tabDAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1034.0">
                            <children>
-                              <PieChart fx:id="piechartLine" animated="false" layoutX="42.0" layoutY="21.0" prefHeight="529.0" prefWidth="971.0" />
+                              <PieChart fx:id="piechartLine" animated="false" layoutX="42.0" layoutY="21.0" prefHeight="529.0" prefWidth="971.0" title="Lines of Commits Per Team Member" />
                            </children></AnchorPane>
-                    </content>
-                  </ScrollPane>
-               </content>
-            </Tab>
-            <Tab text="Tab E">
-               <content>
-                  <ScrollPane fx:id="tabESP" prefHeight="200.0" prefWidth="200.0">
-                    <content>
-                      <AnchorPane fx:id="tabEAP" minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="1035.0" />
                     </content>
                   </ScrollPane>
                </content>
@@ -152,20 +136,24 @@
         </tabs>
       </TabPane>
       <Label fx:id="errorLabel" layoutX="45.0" layoutY="113.0" text="Unable to parse URL! Repo might be private or it doesn't exist!" textFill="RED" visible="false" />
-      <AnchorPane fx:id="hiddenMenu" layoutX="-278.0" layoutY="222.0" prefHeight="311.0" prefWidth="278.0" style="-fx-background-color: white;">
+      <AnchorPane fx:id="hiddenMenu" layoutX="-278.0" layoutY="222.0" prefHeight="345.0" prefWidth="278.0" style="-fx-background-color: white;">
          <children>
-            <Button fx:id="addNoti" layoutX="120.0" layoutY="259.0" mnemonicParsing="false" text="Add" />
-            <TextArea fx:id="notifyEmail" layoutX="19.0" layoutY="66.0" prefHeight="67.0" prefWidth="240.0" promptText="Emails" />
+            <Button fx:id="addNoti" layoutX="120.0" layoutY="300.0" mnemonicParsing="false" text="Add" />
+            <TextArea fx:id="notifyEmail" layoutX="19.0" layoutY="66.0" prefHeight="67.0" prefWidth="244.0" promptText="Emails" />
             <Label fx:id="notifyTitle" layoutX="97.0" layoutY="14.0" text="Notification">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </Label>
-            <ChoiceBox fx:id="notificationHours" layoutX="94.0" layoutY="157.0" prefHeight="25.0" prefWidth="166.0" />
-            <ChoiceBox fx:id="notificationMinutes" layoutX="94.0" layoutY="201.0" prefHeight="25.0" prefWidth="166.0" />
-            <Label layoutX="32.0" layoutY="161.0" text="Hours: " />
-            <Label layoutX="27.0" layoutY="205.0" text="Minutes: " />
-            <Label fx:id="notificationError" layoutX="10.0" layoutY="233.0" text="Email provided was invalid!" textFill="RED" visible="false" prefHeight="17.0" prefWidth="255.0" textOverrun="CLIP" />
+             <ChoiceBox fx:id="notificationDayDay" layoutX="114.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0" />
+            <ChoiceBox fx:id="notificationDayHour" layoutX="165.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0" />
+            <ChoiceBox fx:id="notificationDayMin" layoutX="216.0" layoutY="157.0" prefHeight="25.0" prefWidth="48.0" />
+            <ChoiceBox fx:id="notificationHours" layoutX="114.0" layoutY="201.0" prefHeight="25.0" prefWidth="150.0" />
+            <ChoiceBox fx:id="notificationMinutes" layoutX="114.0" layoutY="245.0" prefHeight="25.0" prefWidth="150.0" />
+            <RadioButton fx:id="byDay" layoutX="10.0" layoutY="161.0" selected="false" text="By Day: " />
+            <RadioButton fx:id="byHour" layoutX="10.0" layoutY="205.0" selected="false" text="By Hours: " />
+            <RadioButton fx:id="byMin" layoutX="10.0" layoutY="249.0" selected="false" text="By Minutes: " />
+            <Label fx:id="notificationFeedback" layoutX="10.0" layoutY="277.0" prefHeight="17.0" prefWidth="255.0" textOverrun="CLIP" visible="false" />
          </children>
       </AnchorPane>
    </children>
