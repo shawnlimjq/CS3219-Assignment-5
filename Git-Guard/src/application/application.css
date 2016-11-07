@@ -1,3 +1,6 @@
 .chart-title {
   -fx-font-size: 2em;
 }
+
+.default-color0.chart-bar { -fx-bar-fill: #008000; }
+.default-color1.chart-bar { -fx-bar-fill: #800000; }
