@@ -33,7 +33,7 @@ public class GitGuard extends Application {
 					}
 				}
 			});
-			primaryStage.setTitle("Git-Guard");
+			primaryStage.setTitle("Git-Explorer");
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.setResizable(false);

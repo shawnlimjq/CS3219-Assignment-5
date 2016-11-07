@@ -69,7 +69,9 @@ public class MainPage extends AnchorPane {
 	
 	private static final String MAIN_PAGE_FXML_URL = "MainPage.fxml";
 	private static ObservableList<PieChart.Data> list = FXCollections.observableList(new ArrayList<PieChart.Data>());
+	private static ObservableList<PieChart.Data> commitHistoryList = FXCollections.observableList(new ArrayList<PieChart.Data>());
 	private static ObservableList<PieChart.Data> dList = FXCollections.observableList(new ArrayList<PieChart.Data>());
+	private static ObservableList<PieChart.Data> lineCommitHistoryList = FXCollections.observableList(new ArrayList<PieChart.Data>());
 	private static ObservableList<String> contributors  = FXCollections.observableList(new ArrayList<String>());
 	
 	private static final String CONTRIBUTIONS = "contributions";
@@ -118,6 +120,8 @@ public class MainPage extends AnchorPane {
 	private Label errorLabel;
 	@FXML
 	private Label notifyTitle;
+	@FXML
+	private Label notiHelp;
 	@FXML
 	private Label notificationFeedback;
 	@FXML
@@ -181,9 +185,9 @@ public class MainPage extends AnchorPane {
 	@FXML
 	private PieChart piechartLine;
 	@FXML
-	private BarChart<String, Integer> fileCommitHistory;
+	private PieChart fileCommitHistory;
 	@FXML
-	private BarChart<String, Integer> lineCommitHistory;
+	private PieChart lineCommitHistory;
 	@FXML
 	private ScatterChart<String, Number> contributorScatter;
 	@FXML
@@ -229,8 +233,10 @@ public class MainPage extends AnchorPane {
 	private void checkError(){
 		if (noError==false){
 			errorLabel.setVisible(true);
+			notiHelp.setVisible(false);
 		} else{
 			errorLabel.setVisible(false);
+			notiHelp.setVisible(true);
 		}
 	}
 	
@@ -722,11 +728,13 @@ public class MainPage extends AnchorPane {
 	
 	// Call this after a file is clicked
 	private void displayCommits(String filePath){
+		commitHistoryList.clear();
+		fileCommitHistory.setData(commitHistoryList);
 		commitSHAS = new ArrayList<String>();
 		CommitParser commitParser = new CommitParser(mainParser.getOldUrl(), "", "", filePath);
 		noError = commitParser.parseURL();
 		checkError();
-		XYChart.Series<String, Integer> series = new XYChart.Series<>();
+		
 		HashMap<String, Integer> commitCount = new HashMap<String, Integer>();
 		fileCommitHistory.getData().clear();
 		
@@ -756,9 +764,11 @@ public class MainPage extends AnchorPane {
 			for(Map.Entry<String, Integer> dateEntry : commitCount.entrySet()){
     	    	String name = dateEntry.getKey();
     	    	int count = dateEntry.getValue();
-    	    	series.getData().add(new XYChart.Data<>(name, count));
+    	    	commitHistoryList.add(new PieChart.Data(name, count));
+    	    
     	    }
-			fileCommitHistory.getData().add(series);
+			commitHistoryList.forEach(data -> data.nameProperty()
+					.bind(Bindings.concat(data.getName(), "-", data.pieValueProperty(), " Commits")));
 		}
 	}
 	
@@ -777,9 +787,11 @@ public class MainPage extends AnchorPane {
 	}
 	
 	private void displayLinesHistory(String filePath, int from, int to) {
-
+		tabCTabPane.getSelectionModel().select(tabCTabC);
+		// 0 is the latest commit
+		lineCommitHistoryList.clear();
+		lineCommitHistory.setData(lineCommitHistoryList);
 		HashMap <String, Integer> authorChanges = new HashMap<String, Integer>();
-		XYChart.Series<String, Integer> lineSeries = new XYChart.Series<>();
 		for(int shaIndex =0 ; shaIndex < commitSHAS.size(); shaIndex++){
 			// Commit SHA
 			FileCommitParser fileCommitParser = new FileCommitParser(mainParser.getOldUrl(), commitSHAS.get(shaIndex));
@@ -797,7 +809,7 @@ public class MainPage extends AnchorPane {
 					JSONObject jsonFile = (JSONObject) jsonFiles.get(i);
 					String filename = (String) jsonFile.get(FILENAME);
 					// TODO: Add Exception handling
-					if(filename.equals(filePath.substring(filePath.lastIndexOf("/") + 1))){
+					if(filename.substring(filename.lastIndexOf("/") + 1).equals(filePath.substring(filePath.lastIndexOf("/") + 1))){
 						// Do something with the patch if it's the file
 						// @@ -0,0 +1,19 @@
 						String patch = (String) jsonFile.get(PATCH);
@@ -866,17 +878,17 @@ public class MainPage extends AnchorPane {
 						authorChanges.put(name, changes);
 					}
 				}
-			
+				
+				for(Map.Entry<String, Integer> authorEntry : authorChanges.entrySet()){
+	    	    	String nameEntry = authorEntry.getKey();
+	    	    	int count = authorEntry.getValue();
+	    	    	lineCommitHistoryList.add(new PieChart.Data(nameEntry, count));
+	    	    }
+				lineCommitHistory.setTitle("Commit History Per Team Member From Line " + from + " to " + to);
+				lineCommitHistoryList.forEach(data -> data.nameProperty()
+						.bind(Bindings.concat(data.getName(), "-", data.pieValueProperty(), " Commits")));
 			}
 		}
-		
-		for(Map.Entry<String, Integer> authorEntry : authorChanges.entrySet()){
-	    	String nameEntry = authorEntry.getKey();
-	    	int count = authorEntry.getValue();
-	    	lineSeries.getData().add(new XYChart.Data<>(nameEntry, count));
-	    }
-		lineCommitHistory.setTitle("Commit History Per Team Member From Line " + from + " to " + to);
-		lineCommitHistory.getData().add(lineSeries);
 		
 	}
 	
