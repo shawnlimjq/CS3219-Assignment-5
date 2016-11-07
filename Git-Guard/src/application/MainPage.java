@@ -353,6 +353,7 @@ public class MainPage extends AnchorPane {
 						
 						piechartA.visibleProperty().set(true);
 						contributors.clear();
+						contributorChoice.getItems().clear();
 						contributorScatter.getData().clear();
 						contributorScatter.setVisible(false);
 						tabCTabC.disableProperty().set(true);
@@ -622,6 +623,7 @@ public class MainPage extends AnchorPane {
 		checkError();
 		
 		if(noError){
+			contributors.clear();
 			// Update UI with parser's JSONArray
 			JSONArray jsonArr = contriParser.getJSONArr();
 			list.clear();
